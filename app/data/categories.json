@@ -1,0 +1,11 @@
+{
+  "categories": [
+    { "id": "drama", "name": "قصص دراما" },
+    { "id": "horror", "name": "قصص رعب" },
+    { "id": "kids", "name": "قصص أطفال" },
+    { "id": "sci-fi", "name": "قصص خيال علمي" },
+    { "id": "thriller", "name": "قصص مشوقة" },
+    { "id": "islamic", "name": "قصص دينية" },
+    { "id": "love", "name": "قصص حب" }
+  ]
+}
