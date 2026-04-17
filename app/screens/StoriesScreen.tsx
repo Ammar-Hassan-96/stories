@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity, StatusBar, Image } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StatusBar, Dimensions } from "react-native";
 import { StoryService } from "../services/StoryService";
 import { StoriesScreenProps } from "../types/navigation";
 import StoryItem from "../components/StoryItem";
@@ -11,6 +11,8 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
   const { categoryId, categoryName } = route.params;
   const stories = StoryService.getStoriesByCategory(categoryId);
   const { isDark } = useTheme();
+  const screenWidth = Dimensions.get("window").width;
+  const columnWidth = screenWidth / 2;
 
   return (
     <View className={`flex-1 ${isDark ? "bg-background-dark" : "bg-background-light"}`}>
@@ -39,10 +41,12 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
           <FlatList
             data={stories}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={{ padding: 12, paddingBottom: 40 }}
+            numColumns={2}
+            contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 40 }}
             renderItem={({ item }) => (
               <StoryItem
                 story={item}
+                width={columnWidth}
                 onPress={() => navigation.navigate("StoryDetails", { storyId: item.id })}
               />
             )}

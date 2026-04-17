@@ -1,4 +1,6 @@
+import "react-native-gesture-handler";
 import "./global.css";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import React from "react";
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -10,10 +12,27 @@ import StoryDetailsScreen from "./app/screens/StoryDetailsScreen";
 import { RootStackParamList } from "./app/types/navigation";
 import { StatusBar } from "expo-status-bar";
 import { I18nManager } from "react-native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import PrivacyPolicyScreen from "./app/screens/PrivacyPolicyScreen";
+import ContactUsScreen from "./app/screens/ContactUsScreen";
+import DrawerContent from "./app/components/DrawerContent";
+import { RootDrawerParamList } from "./app/types/navigation";
+
 I18nManager.allowRTL(true);
 I18nManager.forceRTL(true);
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const Drawer = createDrawerNavigator<RootDrawerParamList>();
+
+const HomeStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }} id={undefined}>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Stories" component={StoriesScreen} />
+      <Stack.Screen name="StoryDetails" component={StoryDetailsScreen} />
+    </Stack.Navigator>
+  );
+};
 
 const Navigation = () => {
   const { isDark } = useTheme();
@@ -36,22 +55,28 @@ const Navigation = () => {
 
   return (
     <NavigationContainer theme={isDark ? darkThemeColors : themeColors}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Stories" component={StoriesScreen} />
-        <Stack.Screen name="StoryDetails" component={StoryDetailsScreen} />
-      </Stack.Navigator>
+      <Drawer.Navigator 
+        screenOptions={{ headerShown: false, drawerPosition: "right" }}
+        drawerContent={(props) => <DrawerContent {...props} />}
+        id={undefined}
+      >
+        <Drawer.Screen name="HomeStack" component={HomeStack} />
+        <Drawer.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+        <Drawer.Screen name="ContactUs" component={ContactUsScreen} />
+      </Drawer.Navigator>
     </NavigationContainer>
   );
 };
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <ThemeProvider>
-        <StatusBar style="auto" />
-        <Navigation />
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <StatusBar style="auto" />
+          <Navigation />
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

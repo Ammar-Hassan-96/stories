@@ -48,30 +48,32 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({ route, navigati
           </TouchableOpacity>
         </View>
 
-        <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
-          <Image
-            source={{ uri: story.image }}
-            className="w-full h-64 rounded-3xl mb-6 shadow-sm"
-            resizeMode="cover"
-          />
-          <Text style={{ writingDirection: "rtl" }} className={`text-3xl font-extrabold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
-            {story.title}
-          </Text>
-          <View className="flex-row-reverse mb-6 justify-end">
-            <Text style={{ writingDirection: "rtl" }} className={`text-sm mr-4 font-medium ${isDark ? "text-primary-light" : "text-primary"}`}>
-              الكاتب: {story.author}
-            </Text>
-            <Text style={{ writingDirection: "rtl" }} className={`text-sm mr-4 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-              تاريخ: {story.date}
-            </Text>
+        <View className="flex-1 p-4 pb-0 pt-2">
+          <View className={`flex-1 rounded-sm shadow-md overflow-hidden ${isDark ? "bg-[#2C2416] border-[#3E3224]" : "bg-[#FDF6E3] border-[#E5C189]"} border-2 border-r-8 ${isDark ? "border-r-[#1E170E]" : "border-r-[#8B4513]"}`}>
+            <ScrollView className="flex-1" contentContainerStyle={{ padding: 20, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
+              <View className="items-center mb-8 border-b-2 pb-6 border-dashed opacity-50">
+                <Text style={{ writingDirection: "rtl" }} className={`text-3xl font-extrabold text-center mb-4 ${isDark ? "text-[#E6D5B8]" : "text-[#5C3A21]"}`}>
+                  {story.title}
+                </Text>
+                <View className="flex-row-reverse justify-center gap-6">
+                  <Text style={{ writingDirection: "rtl" }} className={`text-base font-medium ${isDark ? "text-[#C1A87D]" : "text-[#8B5A2B]"}`}>
+                    بقلم: {story.author}
+                  </Text>
+                  <Text style={{ writingDirection: "rtl" }} className={`text-sm mt-0.5 ${isDark ? "text-[#A89467]" : "text-[#A07855]"}`}>
+                    {story.date}
+                  </Text>
+                </View>
+              </View>
+              
+              <Text
+                style={{ fontSize, lineHeight: fontSize * 1.8, writingDirection: "rtl" }}
+                className={`text-right leading-relaxed ${isDark ? "text-[#DFD3C3]" : "text-[#2C1E16]"}`}
+              >
+                {story.content}
+              </Text>
+            </ScrollView>
           </View>
-          <Text
-            style={{ fontSize, lineHeight: fontSize * 1.8, writingDirection: "rtl" }}
-            className={`text-left leading-relaxed ${isDark ? "text-gray-200" : "text-gray-900"}`}
-          >
-            {story.content}
-          </Text>
-        </ScrollView>
+        </View>
       </SafeAreaView>
     </View>
   );

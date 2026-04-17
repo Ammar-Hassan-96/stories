@@ -3,9 +3,11 @@ import { View, Text, ScrollView, TouchableOpacity, Dimensions, StatusBar } from 
 import { StoryService } from "../services/StoryService";
 import { HomeScreenProps } from "../types/navigation";
 import CategoryCard from "../components/CategoryCard";
-import { Moon, Sun } from "lucide-react-native";
+import { Moon, Sun, Menu } from "lucide-react-native";
 import { useTheme } from "../services/ThemeContext";
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from "@react-navigation/native";
+import { AppDrawerNavigationProp } from "../types/navigation";
 
 const { width, height } = Dimensions.get("window");
 
@@ -39,6 +41,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     ));
   };
 
+  const drawerNavigation = useNavigation<AppDrawerNavigationProp>();
+
   return (
     <View className={`flex-1 ${isDark ? "bg-background-dark" : "bg-background-light"}`}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
@@ -46,16 +50,24 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <SafeAreaView className="flex-1">
         {/* Header Section */}
         <View className="flex-row-reverse justify-between items-center px-8 py-6">
-          <TouchableOpacity
-            onPress={toggleTheme}
-            className={`p-3.5 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} border ${isDark ? "border-white/10" : "border-black/10"} shadow-sm`}
-          >
-            {isDark ? (
-              <Sun color="#FBBF24" size={24} />
-            ) : (
-              <Moon color="#111827" size={24} />
-            )}
-          </TouchableOpacity>
+          <View className="flex-row-reverse gap-3">
+            <TouchableOpacity
+              onPress={() => drawerNavigation.openDrawer()}
+              className={`p-3.5 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} border ${isDark ? "border-white/10" : "border-black/10"} shadow-sm`}
+            >
+              <Menu color={isDark ? "#ffffff" : "#111827"} size={24} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={toggleTheme}
+              className={`p-3.5 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} border ${isDark ? "border-white/10" : "border-black/10"} shadow-sm`}
+            >
+              {isDark ? (
+                <Sun color="#FBBF24" size={24} />
+              ) : (
+                <Moon color="#111827" size={24} />
+              )}
+            </TouchableOpacity>
+          </View>
           <Text style={{ writingDirection: "rtl" }} className={`text-3xl font-extrabold text-right ${isDark ? "text-white" : "text-gray-900"}`}>
             مكتبة القصص
           </Text>
