@@ -178,7 +178,7 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   },
   headerTitleContainer: {
     flex: 1,
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     gap: 8,
     paddingRight: 8,
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     writingDirection: "rtl",
   },
   listContent: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 0,
     paddingTop: 8,
     paddingBottom: 40,
   },

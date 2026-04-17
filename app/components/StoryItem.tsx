@@ -27,112 +27,109 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
   const cardWidth = width ? width - 16 : 160;
   const cardHeight = cardWidth * 1.45;
   const accentColor = categoryAccent[story.category_id] ?? "#5C4033";
-  const excerpt = getExcerpt(story.content, 70);
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.88}
-      style={[
-        styles.container,
-        {
-          width: cardWidth,
-          height: cardHeight,
-          margin: 8,
-          // 3D cover effect properties
-          backgroundColor: isDark ? "#2C2A3A" : "#FFFFFF",
-          borderColor: isDark ? "#12111A" : "#D1D1D1",
-        },
-      ]}
-      onPress={onPress}
-    >
-      <View style={styles.bookInner}>
-        {/* Book cover image with blur-load effect */}
-        <BlurImage
-          uri={story.image_url}
-          width={cardWidth - 8} // Adjust for spine
-          height={cardHeight - 2} // Adjust for book borders
-          borderRadius={0}
-          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+    <View style={styles.bookWrapper}>
+      <TouchableOpacity
+        activeOpacity={0.88}
+        style={[
+          styles.container,
+          {
+            width: cardWidth,
+            height: cardHeight,
+            // 3D cover effect properties
+            backgroundColor: isDark ? "#2C2A3A" : "#FFFFFF",
+            borderColor: isDark ? "#12111A" : "#D1D1D1",
+          },
+        ]}
+        onPress={onPress}
+      >
+        <View style={styles.bookInner}>
+          {/* Book cover image with blur-load effect */}
+          <BlurImage
+            uri={story.image_url}
+            width={cardWidth - 8}
+            height={cardHeight - 2}
+            borderRadius={0}
+            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+          />
+
+          {/* Inner shadow to give depth to the cover image */}
+          <View style={[styles.innerShadow, { 
+              borderColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)',
+          }]} />
+
+          {/* Bottom gradient overlay — book title area */}
+          <LinearGradient
+            colors={["transparent", "rgba(0,0,0,0.4)", "rgba(0,0,0,0.92)"]}
+            locations={[0, 0.35, 1]}
+            style={styles.gradient}
+          >
+            {/* Title — printed on the book cover */}
+            <View style={styles.titleContainer}>
+              <View style={[styles.titleAccentLine, { backgroundColor: accentColor }]} />
+              <Text
+                style={[styles.title, { fontFamily: 'Amiri_700Bold' }]}
+                numberOfLines={2}
+                allowFontScaling={false}
+              >
+                {story.title}
+              </Text>
+            </View>
+          </LinearGradient>
+        </View>
+        
+        {/* 3D Arabic Spine (On the Right) */}
+        <View style={[styles.spine, { backgroundColor: accentColor }]} />
+        {/* Spine highlight to simulate 3D curve */}
+        <LinearGradient 
+            colors={['rgba(255,255,255,0.4)', 'transparent', 'rgba(0,0,0,0.4)']} 
+            start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
+            style={styles.spineHighlight} 
         />
+      </TouchableOpacity>
 
-        {/* Inner shadow to give depth to the cover image */}
-        <View style={[styles.innerShadow, { 
-            borderColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)',
-        }]} />
-
-        {/* Bottom gradient overlay */}
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.5)", "rgba(0,0,0,0.95)"]}
-          locations={[0, 0.4, 1]}
-          style={styles.gradient}
-        >
-          {/* Author tag */}
-          <View style={[styles.authorBadge, { backgroundColor: accentColor + "DD" }]}>
-            <Text style={styles.authorText} numberOfLines={1}>
-              {story.author}
-            </Text>
-          </View>
-
-          {/* Title */}
-          <Text
-            style={styles.title}
-            numberOfLines={2}
-            allowFontScaling={false}
-          >
-            {story.title}
-          </Text>
-
-          {/* Excerpt */}
-          <Text
-            style={styles.excerpt}
-            numberOfLines={2}
-            allowFontScaling={false}
-          >
-            {excerpt}
-          </Text>
-        </LinearGradient>
-      </View>
-      
-      {/* 3D Arabic Spine (On the Right) */}
-      <View style={[styles.spine, { backgroundColor: accentColor }]} />
-      {/* Spine highlight to simulate 3D curve */}
-      <LinearGradient 
-          colors={['rgba(255,255,255,0.4)', 'transparent', 'rgba(0,0,0,0.4)']} 
-          start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
-          style={styles.spineHighlight} 
-      />
-
-    </TouchableOpacity>
+      {/* Desk shadow under the book */}
+      <View style={[styles.deskShadow, { 
+        width: cardWidth * 0.75,
+        backgroundColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.15)',
+      }]} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  bookWrapper: {
+    alignItems: 'center',
+    margin: 8,
+  },
   container: {
     borderRadius: 6,
-    borderTopRightRadius: 4,
-    borderBottomRightRadius: 4,
     borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
+    borderBottomLeftRadius: 4,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
     borderWidth: 1,
     overflow: "hidden",
     elevation: 8,
+    shadowColor: "#000",
     shadowOffset: { width: -4, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
-    flexDirection: 'row', // align spine to the right
+    flexDirection: 'row-reverse',
   },
   bookInner: {
     flex: 1,
     overflow: 'hidden',
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
     backgroundColor: '#000',
   },
   innerShadow: {
     ...StyleSheet.absoluteFillObject,
     borderWidth: 1,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
   },
   spine: {
     width: 10,
@@ -151,44 +148,41 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     left: 0,
-    right: 0, // ensure it covers up to the spine
-    paddingHorizontal: 12,
-    paddingBottom: 12,
+    right: 0,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
     paddingTop: 50,
+    justifyContent: 'flex-end',
   },
-  authorBadge: {
-    alignSelf: "flex-end", // Adjust to end
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+  titleContainer: {
+    borderLeftWidth: 0,
+    paddingLeft: 0,
   },
-  authorText: {
-    color: "#fff",
-    fontSize: 9,
-    fontWeight: "700",
-    textAlign: "right",
+  titleAccentLine: {
+    height: 2,
+    width: 28,
+    borderRadius: 1,
+    marginBottom: 6,
+    alignSelf: 'center',
+    opacity: 0.85,
   },
   title: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "900",
-    textAlign: "right",
+    color: "#F0E6D3",
+    fontSize: 15,
+    textAlign: "center",
     writingDirection: "rtl",
-    marginBottom: 6,
-    lineHeight: 20,
-    textShadowColor: "rgba(0,0,0,0.9)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    lineHeight: 24,
+    // Embossed book look: subtle warm tint + text shadow
+    textShadowColor: "rgba(0,0,0,0.8)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+    letterSpacing: 0.3,
   },
-  excerpt: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 10,
-    textAlign: "right",
-    writingDirection: "rtl",
-    lineHeight: 15,
+  deskShadow: {
+    height: 6,
+    borderRadius: 100,
+    marginTop: 2,
+    opacity: 0.7,
   },
 });
 

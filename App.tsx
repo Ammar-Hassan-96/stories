@@ -2,6 +2,8 @@ import "react-native-gesture-handler";
 import "./global.css";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import React from "react";
+import { useFonts } from "expo-font";
+import { Amiri_400Regular, Amiri_700Bold } from "@expo-google-fonts/amiri";
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -69,6 +71,15 @@ const Navigation = () => {
 };
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Amiri_400Regular,
+    Amiri_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

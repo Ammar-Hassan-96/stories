@@ -101,7 +101,7 @@ const StoryContent = memo(
               {parts.map((part, i) => {
                 if (part.startsWith("**") && part.endsWith("**")) {
                   return (
-                    <Text key={i} style={{ fontWeight: "800", color: accentColor }}>
+                    <Text key={i} style={{ fontFamily: 'Amiri_700Bold', color: accentColor }}>
                       {part.slice(2, -2)}
                     </Text>
                   );
@@ -200,7 +200,7 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
               <View style={styles.coverImageContainer}>
                 <BlurImage
                   uri={story.image_url}
-                  width={SCREEN_WIDTH - 80} 
+                  width={SCREEN_WIDTH - 120} 
                   height={COVER_HEIGHT}
                   borderRadius={4}
                 />
@@ -219,6 +219,7 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
                   { 
                     color: isDark ? "#F0E6D3" : "#2C1810", 
                     fontSize: fontSize + 8,
+                    lineHeight: (fontSize + 8) * 1.8,
                     textShadowColor: isDark ? 'transparent' : 'rgba(0,0,0,0.1)',
                     textShadowOffset: { width: 0, height: 1 },
                     textShadowRadius: 1 
@@ -301,7 +302,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
@@ -403,8 +404,8 @@ const styles = StyleSheet.create({
   
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 32,
-    paddingTop: 36,
+    paddingHorizontal: 40,
+    paddingTop: 40,
     paddingBottom: 60,
   },
   coverImageContainer: {
@@ -425,12 +426,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 8,
     paddingBottom: 16,
+    writingDirection: "ltr",
   },
   storyTitle: {
-    fontWeight: "900",
+    fontFamily: "Amiri_700Bold",
     textAlign: "center",
     writingDirection: "rtl",
-    lineHeight: 46,
     marginBottom: 16,
   },
   titleDivider: {
@@ -450,7 +451,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   metaText: {
-    fontWeight: "700",
+    fontFamily: "Amiri_400Regular",
     writingDirection: "rtl",
   },
   chapterDivider: {
@@ -459,7 +460,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   contentContainer: {
-    paddingHorizontal: 4,
+    paddingHorizontal: 0,
     paddingTop: 10,
   },
   headingContainer: {
@@ -477,15 +478,15 @@ const styles = StyleSheet.create({
   },
   headingText: {
     flex: 1,
-    fontWeight: "800",
-    textAlign: "right",
+    fontFamily: "Amiri_700Bold",
+    textAlign: "left",
     writingDirection: "rtl",
-    lineHeight: 30,
+    lineHeight: 34,
   },
   paragraph: {
-    textAlign: "justify", // classic book alignment
+    fontFamily: "Amiri_400Regular",
+    textAlign: "justify",
     writingDirection: "rtl",
-    fontWeight: "500",
   },
   endOrnamentContainer: {
     flexDirection: "row",
@@ -500,7 +501,7 @@ const styles = StyleSheet.create({
     height: 1,
   },
   endTextIndicator: {
-    fontWeight: '800',
+    fontFamily: 'Amiri_700Bold',
     writingDirection: 'rtl',
   },
 });
