@@ -7,6 +7,7 @@ import {
   StatusBar,
   StyleSheet,
   Dimensions,
+  ImageBackground,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StoryDetailsScreenProps } from "../types/navigation";
@@ -17,7 +18,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BlurImage from "../components/BlurImage";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const COVER_HEIGHT = Math.round(SCREEN_WIDTH * 0.55);
+const COVER_HEIGHT = Math.round(SCREEN_WIDTH * 0.5);
+
+// We need the local frame image
+const frameImage = require("../../assets/book-frame.png");
 
 // Category colors for book theme
 const categoryAccent: Record<string, { primary: string; light: string; dark: string }> = {
@@ -46,10 +50,11 @@ const StoryContent = memo(
     isDark: boolean;
     accentColor: string;
   }) => {
-    const textColor = isDark ? "#E8DDD0" : "#2C1E16";
+    // Books usually use pure black ink on beige pages
+    const textColor = isDark ? "#E8DDD0" : "#1A1A1A"; 
     const lineHeight = fontSize * 1.9;
 
-    // Split into paragraphs on double newline or single newline
+    // Split into paragraphs
     const paragraphs = content
       .split(/\n\n|\n/)
       .map((p) => p.trim())
@@ -58,7 +63,7 @@ const StoryContent = memo(
     return (
       <>
         {paragraphs.map((paragraph, pIdx) => {
-          // Detect section headings: lines wrapped in ** ... **
+          // Detect section headings
           const isHeading =
             paragraph.startsWith("**") && paragraph.endsWith("**");
 
@@ -72,7 +77,7 @@ const StoryContent = memo(
                 <Text
                   style={[
                     styles.headingText,
-                    { color: accentColor, fontSize: fontSize + 1 },
+                    { color: accentColor, fontSize: fontSize + 2 },
                   ]}
                 >
                   {headingText}
@@ -81,7 +86,7 @@ const StoryContent = memo(
             );
           }
 
-          // Render inline bold (split on **)
+          // Regular paragraph with inline bold support
           const parts = paragraph.split(/(\*\*[^*]+\*\*)/g);
 
           return (
@@ -93,7 +98,7 @@ const StoryContent = memo(
                   fontSize,
                   lineHeight,
                   color: textColor,
-                  marginBottom: fontSize * 0.9,
+                  marginBottom: fontSize * 1.2, // standard paragraph spacing
                 },
               ]}
             >
@@ -120,7 +125,7 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
   navigation,
 }) => {
   const { story } = route.params;
-  const [fontSize, setFontSize] = useState(17);
+  const [fontSize, setFontSize] = useState(18); // Base physical book size is slightly larger
   const { isDark } = useTheme();
 
   const accent = categoryAccent[story.category_id] ?? {
@@ -129,18 +134,16 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
     dark: "#2C1E10",
   };
 
-  const bgColor = isDark ? "#0F0D18" : accent.light;
-  const pageBg = isDark ? "#1A1628" : "#FDFAF4";
-  const pageEdge = isDark ? "#2A2240" : "#E8D5B0";
-  const spineColor = isDark ? accent.dark : "#D4B483";
-  const textMuted = isDark ? "#8B8095" : "#9C8167";
+  // The background behind the book 
+  const bgColor = isDark ? "#08070A" : "#D4D0C8"; 
+  const pageBg = isDark ? "#121017" : "#F4EFE6"; // Beige/off-white paper color
 
   const incFontSize = useCallback(
-    () => setFontSize((v) => Math.min(26, v + 1)),
+    () => setFontSize((v) => Math.min(28, v + 1)),
     []
   );
   const decFontSize = useCallback(
-    () => setFontSize((v) => Math.max(13, v - 1)),
+    () => setFontSize((v) => Math.max(14, v - 1)),
     []
   );
 
@@ -149,13 +152,12 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
       <SafeAreaView style={{ flex: 1 }}>
-        {/* Top bar */}
+        {/* Top bar floating outside the book */}
         <View
           style={[
             styles.topBar,
             {
-              backgroundColor: isDark ? "rgba(15,13,24,0.95)" : "rgba(253,250,244,0.95)",
-              borderBottomColor: pageEdge,
+              backgroundColor: isDark ? "rgba(18,16,23,0.85)" : "rgba(244,239,230,0.85)",
             },
           ]}
         >
@@ -163,44 +165,39 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
             onPress={() => navigation.goBack()}
             style={[styles.iconBtn, { backgroundColor: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)" }]}
           >
-            <ChevronLeft color={isDark ? "#E0D5C5" : "#5C3A21"} size={22} />
+            <ChevronLeft color={isDark ? "#E0D5C5" : "#3D2A1C"} size={22} />
           </TouchableOpacity>
 
           {/* Font size controls */}
           <View style={styles.fontControls}>
             <TouchableOpacity
               onPress={decFontSize}
-              style={[styles.fontBtn, { borderColor: isDark ? "#3D3055" : "#C8B08A" }]}
+              style={[styles.fontBtn, { borderColor: isDark ? "#3D3055" : "#BBAA94" }]}
             >
-              <Minus color={isDark ? "#C8A96E" : "#8B5A2B"} size={16} />
+              <Minus color={isDark ? "#C8A96E" : "#7A5C43"} size={16} />
             </TouchableOpacity>
-            <Text style={[styles.fontSizeLabel, { color: isDark ? "#C8A96E" : "#8B5A2B" }]}>
+            <Text style={[styles.fontSizeLabel, { color: isDark ? "#C8A96E" : "#7A5C43" }]}>
               {fontSize}
             </Text>
             <TouchableOpacity
               onPress={incFontSize}
-              style={[styles.fontBtn, { borderColor: isDark ? "#3D3055" : "#C8B08A" }]}
+              style={[styles.fontBtn, { borderColor: isDark ? "#3D3055" : "#BBAA94" }]}
             >
-              <Plus color={isDark ? "#C8A96E" : "#8B5A2B"} size={16} />
+              <Plus color={isDark ? "#C8A96E" : "#7A5C43"} size={16} />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Book page container */}
-        <View style={styles.bookWrapper}>
-          {/* Book spine (left edge) */}
-          <View style={[styles.bookSpine, { backgroundColor: spineColor }]} />
-
-          {/* Book page */}
-          <View
-            style={[
-              styles.bookPage,
-              {
-                backgroundColor: pageBg,
-                borderColor: pageEdge,
-                shadowColor: accent.primary,
-              },
-            ]}
+        {/* Outer view to represent the book binding */}
+        <View style={[styles.physicalBook, { backgroundColor: pageBg }]}>
+          {/* A right shadow specifically to simulate thick book block for Arabic */}
+          <View style={[styles.bookBlockShadow, { backgroundColor: isDark ? '#050408' : '#B8B3A8' }]} />
+          
+          <ImageBackground
+            source={frameImage}
+            style={styles.frameBackground}
+            imageStyle={styles.frameImageStyle}
+            resizeMode="stretch" 
           >
             <ScrollView
               style={{ flex: 1 }}
@@ -208,33 +205,36 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
               showsVerticalScrollIndicator={false}
               scrollEventThrottle={16}
             >
-              {/* Cover image */}
+              {/* Cover image inserted inside the frame carefully */}
               {story.image_url && (
                 <View style={styles.coverImageContainer}>
                   <BlurImage
                     uri={story.image_url}
-                    width={SCREEN_WIDTH - 56}
+                    width={SCREEN_WIDTH - 96} // Account for padding of the frame
                     height={COVER_HEIGHT}
-                    borderRadius={8}
+                    borderRadius={4}
                   />
                   <LinearGradient
-                    colors={["transparent", pageBg]}
+                    colors={["transparent", "rgba(244,239,230,0.8)", pageBg]}
                     style={styles.coverGradient}
                   />
+                  {/* Internal border matching the ink frame */}
+                  <View style={styles.coverInkBorder} />
                 </View>
               )}
 
-              {/* Title page */}
+              {/* Title Content */}
               <View style={styles.titlePage}>
-                {/* Decorative ornament */}
-                <Text style={[styles.ornament, { color: accent.primary }]}>
-                  ❦
-                </Text>
-
                 <Text
                   style={[
                     styles.storyTitle,
-                    { color: isDark ? "#F0E6D3" : "#2C1810", fontSize: fontSize + 6 },
+                    { 
+                      color: isDark ? "#F0E6D3" : "#2C1810", 
+                      fontSize: fontSize + 8,
+                      textShadowColor: isDark ? 'transparent' : 'rgba(0,0,0,0.1)',
+                      textShadowOffset: { width: 0, height: 1 },
+                      textShadowRadius: 1 
+                    },
                   ]}
                 >
                   {story.title}
@@ -245,26 +245,26 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
                 {/* Author & date row */}
                 <View style={styles.metaRow}>
                   <View style={styles.metaItem}>
-                    <Calendar size={13} color={textMuted} />
-                    <Text style={[styles.metaText, { color: textMuted, fontSize: fontSize - 4 }]}>
+                    <Calendar size={13} color={isDark ? '#8A7A90' : '#8A7B6D'} />
+                    <Text style={[styles.metaText, { color: isDark ? '#8A7A90' : '#8A7B6D', fontSize: fontSize - 4 }]}>
                       {formatArabicDate(story.created_at)}
                     </Text>
                   </View>
                   <View style={styles.metaItem}>
-                    <User size={13} color={textMuted} />
-                    <Text style={[styles.metaText, { color: isDark ? "#C8A96E" : "#8B5A2B", fontSize: fontSize - 3 }]}>
+                    <User size={13} color={isDark ? '#8A7A90' : '#8A7B6D'} />
+                    <Text style={[styles.metaText, { color: accent.primary, fontSize: fontSize - 3 }]}>
                       {story.author}
                     </Text>
                   </View>
                 </View>
 
-                {/* Chapter start ornament */}
-                <View style={[styles.chapterDivider, { borderColor: accent.primary + "40" }]}>
-                  <BookOpen color={accent.primary} size={16} />
+                {/* Chapter start ornament overlaying frame style */}
+                <View style={styles.chapterDivider}>
+                  <BookOpen color={accent.primary} size={18} />
                 </View>
               </View>
 
-              {/* Story content — rendered as paragraphs */}
+              {/* Text Layout */}
               <View style={styles.contentContainer}>
                 <StoryContent
                   content={story.content}
@@ -273,20 +273,17 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
                   accentColor={accent.primary}
                 />
 
-                {/* End of story ornament */}
+                {/* End of story text ornament */}
                 <View style={styles.endOrnamentContainer}>
-                  <View style={[styles.endLine, { backgroundColor: accent.primary + "50" }]} />
-                  <Text style={[styles.endOrnament, { color: accent.primary }]}>
-                    ✦
+                  <View style={[styles.endLine, { backgroundColor: isDark ? '#3A3A3A' : '#D1C8B8' }]} />
+                  <Text style={[styles.endTextIndicator, { color: isDark ? '#3A3A3A' : '#D1C8B8', fontSize: fontSize - 4 }]}>
+                    تمت
                   </Text>
-                  <View style={[styles.endLine, { backgroundColor: accent.primary + "50" }]} />
+                  <View style={[styles.endLine, { backgroundColor: isDark ? '#3A3A3A' : '#D1C8B8' }]} />
                 </View>
               </View>
             </ScrollView>
-          </View>
-
-          {/* Right page edge shadow */}
-          <View style={[styles.pageRightEdge, { backgroundColor: pageEdge }]} />
+          </ImageBackground>
         </View>
       </SafeAreaView>
     </View>
@@ -303,7 +300,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderBottomWidth: 1,
+    elevation: 4,
+    zIndex: 10,
   },
   iconBtn: {
     padding: 8,
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
   fontControls: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
   },
   fontBtn: {
     width: 32,
@@ -323,118 +321,124 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   fontSizeLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "700",
     minWidth: 24,
     textAlign: "center",
   },
-  bookWrapper: {
+  physicalBook: {
     flex: 1,
-    flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  bookSpine: {
-    width: 8,
-    borderTopLeftRadius: 4,
-    borderBottomLeftRadius: 4,
-    elevation: 4,
+    marginVertical: 12,
+    marginHorizontal: 16,
+    borderRadius: 6,
+    elevation: 8,
     shadowColor: "#000",
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  bookPage: {
-    flex: 1,
-    borderWidth: 1,
-    borderLeftWidth: 0,
-    elevation: 6,
-    shadowOffset: { width: 2, height: 4 },
-    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
     shadowRadius: 8,
-    overflow: "hidden",
   },
-  pageRightEdge: {
-    width: 4,
-    borderTopRightRadius: 4,
-    borderBottomRightRadius: 4,
-    opacity: 0.6,
+  bookBlockShadow: {
+    position: 'absolute',
+    top: 4,
+    bottom: -4,
+    left: -4,
+    width: 12,
+    borderRadius: 4,
+    zIndex: -1,
+  },
+  frameBackground: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  frameImageStyle: {
+    opacity: 0.85, // blend slightly with background
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 60,
+    // Critical: Paddings push the inner content inside the ornate borders of the PNG frame!
+    paddingHorizontal: 40,
+    paddingTop: 46,
+    paddingBottom: 72,
   },
   coverImageContainer: {
     position: "relative",
-    marginBottom: -20,
+    marginBottom: 8,
+    alignItems: "center",
+  },
+  coverInkBorder: {
+    position: 'absolute',
+    top: -2,
+    bottom: -2,
+    left: -2,
+    right: -2,
+    borderWidth: 1,
+    borderColor: '#4A4A4A',
+    borderRadius: 5,
+    borderStyle: 'dashed',
+    pointerEvents: 'none',
   },
   coverGradient: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    height: 80,
+    height: Math.round(COVER_HEIGHT * 0.4),
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
   },
   titlePage: {
     alignItems: "center",
-    paddingHorizontal: 24,
-    paddingTop: 28,
+    paddingTop: 8,
     paddingBottom: 16,
-  },
-  ornament: {
-    fontSize: 28,
-    marginBottom: 12,
   },
   storyTitle: {
     fontWeight: "900",
     textAlign: "center",
     writingDirection: "rtl",
-    lineHeight: 38,
+    lineHeight: 46,
     marginBottom: 16,
   },
   titleDivider: {
-    width: 64,
-    height: 2,
-    borderRadius: 1,
-    marginBottom: 16,
+    width: 48,
+    height: 3,
+    borderRadius: 2,
+    marginBottom: 20,
   },
   metaRow: {
     flexDirection: "row-reverse",
-    gap: 20,
+    gap: 24,
     alignItems: "center",
   },
   metaItem: {
     flexDirection: "row-reverse",
     alignItems: "center",
-    gap: 4,
+    gap: 6,
   },
   metaText: {
-    fontWeight: "600",
+    fontWeight: "700",
     writingDirection: "rtl",
   },
   chapterDivider: {
-    marginTop: 20,
-    width: "100%",
-    borderTopWidth: 1,
-    borderStyle: "dashed",
-    paddingTop: 14,
+    marginTop: 24,
+    paddingTop: 10,
     alignItems: "center",
   },
   contentContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
+    paddingHorizontal: 4,
+    paddingTop: 10,
   },
   headingContainer: {
     flexDirection: "row-reverse",
     alignItems: "center",
-    gap: 8,
-    marginTop: 24,
-    marginBottom: 12,
+    gap: 10,
+    marginTop: 28,
+    marginBottom: 16,
   },
   headingAccent: {
-    width: 3,
+    width: 4,
     height: "100%",
-    minHeight: 20,
+    minHeight: 22,
     borderRadius: 2,
   },
   headingText: {
@@ -442,28 +446,28 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     textAlign: "right",
     writingDirection: "rtl",
-    lineHeight: 26,
+    lineHeight: 30,
   },
   paragraph: {
-    textAlign: "right",
+    textAlign: "justify", // classic book alignment
     writingDirection: "rtl",
-    fontWeight: "400",
+    fontWeight: "500",
   },
   endOrnamentContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginTop: 32,
-    marginBottom: 8,
-    paddingHorizontal: 8,
+    gap: 14,
+    marginTop: 40,
+    marginBottom: 20,
+    paddingHorizontal: 20,
   },
   endLine: {
     flex: 1,
     height: 1,
-    borderRadius: 1,
   },
-  endOrnament: {
-    fontSize: 18,
+  endTextIndicator: {
+    fontWeight: '800',
+    writingDirection: 'rtl',
   },
 });
 
