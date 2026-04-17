@@ -1,8 +1,9 @@
-import React, { useCallback, memo } from "react";
+import React, { useCallback, memo, useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
+  ScrollView,
   TouchableOpacity,
   StatusBar,
   Dimensions,
@@ -11,6 +12,15 @@ import {
   StyleSheet,
   ListRenderItemInfo,
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  withSequence,
+  interpolate,
+  FadeIn,
+} from "react-native-reanimated";
 import { StoriesScreenProps } from "../types/navigation";
 import { Story } from "../types";
 import StoryItem from "../components/StoryItem";
@@ -22,19 +32,40 @@ import { useStories } from "../hooks/useStories";
 const { width: screenWidth } = Dimensions.get("window");
 const columnWidth = screenWidth / 2;
 
-// Skeleton card for loading state
-const SkeletonCard = memo(({ isDark }: { isDark: boolean }) => (
-  <View
-    style={[
-      styles.skeleton,
-      {
-        width: columnWidth - 16,
-        height: (columnWidth - 16) * 1.45,
-        backgroundColor: isDark ? "#1E1A2E" : "#EDE0D4",
-      },
-    ]}
-  />
-));
+// Shimmer skeleton card for loading state
+const SkeletonCard = memo(({ isDark, index }: { isDark: boolean; index: number }) => {
+  const shimmer = useSharedValue(0);
+
+  useEffect(() => {
+    shimmer.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 900 + index * 80 }),
+        withTiming(0, { duration: 900 + index * 80 })
+      ),
+      -1,
+      false
+    );
+  }, []);
+
+  const shimmerStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(shimmer.value, [0, 1], [0.35, 0.75]),
+  }));
+
+  return (
+    <Animated.View
+      entering={FadeIn.delay(index * 60)}
+      style={[
+        styles.skeleton,
+        {
+          width: columnWidth - 16,
+          height: (columnWidth - 16) * 1.45,
+          backgroundColor: isDark ? "#1E1A2E" : "#EDE0D4",
+        },
+        shimmerStyle,
+      ]}
+    />
+  );
+});
 
 // Footer loader shown while fetching next page
 const ListFooter = memo(
@@ -64,7 +95,7 @@ const ListFooter = memo(
 const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
   const { categoryId, categoryName } = route.params;
   const { isDark } = useTheme();
-  const { stories, loading, loadingMore, hasMore, error, loadMore, refresh } =
+  const { stories, loading, refreshing, loadingMore, hasMore, error, loadMore, refresh } =
     useStories(categoryId);
 
   const renderItem = useCallback(
@@ -118,11 +149,20 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
             numColumns={2}
             keyExtractor={(_, i) => `sk-${i}`}
             contentContainerStyle={styles.listContent}
-            renderItem={() => <SkeletonCard isDark={isDark} />}
+            renderItem={({ index }) => <SkeletonCard isDark={isDark} index={index} />}
             scrollEnabled={false}
           />
         ) : error ? (
-          <View style={styles.centerContainer}>
+          <ScrollView
+            contentContainerStyle={styles.centerContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={refresh}
+                tintColor={isDark ? "#C8A96E" : "#8B5A2B"}
+              />
+            }
+          >
             <Text style={[styles.errorText, { color: isDark ? "#F87171" : "#C62828" }]}>
               {error}
             </Text>
@@ -132,14 +172,23 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
             >
               <Text style={styles.retryText}>إعادة المحاولة</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         ) : stories.length === 0 ? (
-          <View style={styles.centerContainer}>
+          <ScrollView
+            contentContainerStyle={styles.centerContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={refresh}
+                tintColor={isDark ? "#C8A96E" : "#8B5A2B"}
+              />
+            }
+          >
             <BookOpen color={isDark ? "#3D3D55" : "#C8B89A"} size={48} />
             <Text style={[styles.emptyText, { color: isDark ? "#6B6B8A" : "#9C8167" }]}>
               لا توجد قصص في هذا التصنيف حالياً
             </Text>
-          </View>
+          </ScrollView>
         ) : (
           <FlatList
             data={stories}
@@ -152,7 +201,7 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
             onEndReachedThreshold={0.5}
             refreshControl={
               <RefreshControl
-                refreshing={loading}
+                refreshing={refreshing}
                 onRefresh={refresh}
                 tintColor={isDark ? "#C8A96E" : "#8B5A2B"}
               />
@@ -213,7 +262,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   centerContainer: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
     gap: 16,

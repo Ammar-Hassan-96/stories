@@ -10,6 +10,7 @@ import {
 interface UseStoriesResult {
   stories: Story[];
   loading: boolean;
+  refreshing: boolean;
   loadingMore: boolean;
   hasMore: boolean;
   error: string | null;
@@ -20,6 +21,7 @@ interface UseStoriesResult {
 export function useStories(categoryId: string): UseStoriesResult {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +30,7 @@ export function useStories(categoryId: string): UseStoriesResult {
   const currentPageRef = useRef(0);
   const isFetchingRef = useRef(false);
 
-  const fetchInitial = useCallback(async (forceRefresh = false) => {
+  const fetchInitial = useCallback(async (forceRefresh = false, signal?: AbortSignal) => {
     // Check cache first (unless force refreshing)
     if (!forceRefresh) {
       const cached = getFromCache(categoryId);
@@ -41,28 +43,40 @@ export function useStories(categoryId: string): UseStoriesResult {
       }
     }
 
-    setLoading(true);
+    if (forceRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
     isFetchingRef.current = true;
 
     try {
       const result = await fetchStoriesFromSupabase(categoryId, 0);
+      if (signal?.aborted) return;
       setStories(result.stories);
       setHasMore(result.hasMore);
       currentPageRef.current = 0;
       setCache(categoryId, result.stories, result.hasMore);
     } catch (err) {
+      if (signal?.aborted) return;
       const message = err instanceof Error ? err.message : "خطأ في تحميل القصص";
       setError(message);
     } finally {
-      setLoading(false);
-      isFetchingRef.current = false;
+      if (!signal?.aborted) {
+        setLoading(false);
+        setRefreshing(false);
+        isFetchingRef.current = false;
+      }
     }
   }, [categoryId]);
 
   useEffect(() => {
+    const controller = new AbortController();
     currentPageRef.current = 0;
-    fetchInitial(false);
+    isFetchingRef.current = false;
+    fetchInitial(false, controller.signal);
+    return () => controller.abort();
   }, [categoryId, fetchInitial]);
 
   const loadMore = useCallback(async () => {
@@ -99,5 +113,5 @@ export function useStories(categoryId: string): UseStoriesResult {
     fetchInitial(true);
   }, [fetchInitial]);
 
-  return { stories, loading, loadingMore, hasMore, error, loadMore, refresh };
+  return { stories, loading, refreshing, loadingMore, hasMore, error, loadMore, refresh };
 }

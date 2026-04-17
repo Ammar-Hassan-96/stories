@@ -53,7 +53,7 @@ const ParagraphRenderer: React.FC<ParagraphRendererProps> = ({
                   </Text>
                 );
               }
-              return part;
+              return <Text key={i}>{part}</Text>;
             })}
           </Text>
         );
