@@ -1,5 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { Story } from "./index";
 
 export type RootDrawerParamList = {
   HomeStack: undefined;
@@ -10,7 +11,7 @@ export type RootDrawerParamList = {
 export type RootStackParamList = {
   Home: undefined;
   Stories: { categoryId: string; categoryName: string };
-  StoryDetails: { storyId: string };
+  StoryDetails: { story: Story };
 };
 
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "Home">;

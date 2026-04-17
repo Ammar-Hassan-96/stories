@@ -4,15 +4,43 @@ export interface Category {
   image?: string;
 }
 
+// Matches Supabase stories table schema exactly
 export interface Story {
-  id: string;
+  id: number;
   title: string;
-  description: string;
   content: string;
-  categoryId: string;
-  image?: string;
-  author?: string;
-  date?: string;
+  image_url: string | null;
+  category_id: string;
+  author: string;
+  is_published: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  last_action: string | null;
+  last_action_at: string | null;
 }
 
 export type ThemeMode = "light" | "dark";
+
+// Helper to get a short excerpt from story content
+export const getExcerpt = (content: string, maxLength: number = 80): string => {
+  const cleaned = content.replace(/\*\*/g, "").replace(/\n/g, " ").trim();
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.substring(0, maxLength).trim() + "...";
+};
+
+// Helper to format created_at date for Arabic display
+export const formatArabicDate = (isoDate: string): string => {
+  try {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("ar-EG", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    return isoDate;
+  }
+};
