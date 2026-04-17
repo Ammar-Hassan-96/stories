@@ -86,8 +86,8 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
     }
   }, [loadMore, loadingMore, hasMore]);
 
-  const bgColor = isDark ? "#0F0D1A" : "#F8F4EE";
-  const headerBg = isDark ? "#13101F" : "#FAF6F0";
+  const bgColor = isDark ? "#0F0D1A" : "#C19A6B";
+  const headerBg = isDark ? "#13101F" : "#C19A6B";
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -95,7 +95,7 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
 
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header */}
-        <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: isDark ? "#2C2840" : "#E5D5C5" }]}>
+        <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: isDark ? "#2C2840" : "#C19A6B" }]}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={[styles.backBtn, { backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)" }]}

@@ -31,7 +31,7 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
   return (
     <View style={styles.bookWrapper}>
       <TouchableOpacity
-        activeOpacity={0.88}
+        activeOpacity={.88}
         style={[
           styles.container,
           {
@@ -59,10 +59,10 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
               borderColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)',
           }]} />
 
-          {/* Bottom gradient overlay — book title area */}
+          {/* Top gradient overlay — book title area */}
           <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.4)", "rgba(0,0,0,0.92)"]}
-            locations={[0, 0.35, 1]}
+            colors={["rgba(0,0,0,0.92)", "rgba(0,0,0,0.4)", "transparent"]}
+            locations={[0, 0.65, 1]}
             style={styles.gradient}
           >
             {/* Title — printed on the book cover */}
@@ -70,7 +70,9 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
               <View style={[styles.titleAccentLine, { backgroundColor: accentColor }]} />
               <Text
                 style={[styles.title, { fontFamily: 'Amiri_700Bold' }]}
-                numberOfLines={2}
+                numberOfLines={3}
+                adjustsFontSizeToFit
+                minimumFontScale={0.8}
                 allowFontScaling={false}
               >
                 {story.title}
@@ -146,13 +148,13 @@ const styles = StyleSheet.create({
   },
   gradient: {
     position: "absolute",
-    bottom: 0,
+    top: 0,
     left: 0,
     right: 0,
     paddingHorizontal: 10,
-    paddingBottom: 10,
-    paddingTop: 50,
-    justifyContent: 'flex-end',
+    paddingTop: 10,
+    paddingBottom: 70,
+    justifyContent: 'flex-start',
   },
   titleContainer: {
     borderLeftWidth: 0,
@@ -168,10 +170,10 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#F0E6D3",
-    fontSize: 15,
+    fontSize: 14,
     textAlign: "center",
     writingDirection: "rtl",
-    lineHeight: 24,
+    lineHeight: 22,
     // Embossed book look: subtle warm tint + text shadow
     textShadowColor: "rgba(0,0,0,0.8)",
     textShadowOffset: { width: 0, height: 1 },
