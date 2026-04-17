@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useColorScheme } from "react-native";
 import { ThemeMode } from "../types";
 
@@ -13,14 +13,18 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const systemColorScheme = useColorScheme();
   const [theme, setTheme] = useState<ThemeMode>(systemColorScheme || "light");
+  // Track whether the user has manually toggled the theme.
+  // Once toggled, system preference changes no longer override it.
+  const userHasToggled = useRef(false);
 
   useEffect(() => {
-    if (systemColorScheme) {
+    if (!userHasToggled.current && systemColorScheme) {
       setTheme(systemColorScheme);
     }
   }, [systemColorScheme]);
 
   const toggleTheme = () => {
+    userHasToggled.current = true;
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 

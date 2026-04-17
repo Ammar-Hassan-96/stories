@@ -62,6 +62,33 @@ export async function fetchStoriesFromSupabase(
 }
 
 /**
+ * Fetch a "featured story of the day" — picks a recent published story
+ * deterministically based on today's date so it stays consistent all day.
+ */
+export async function fetchFeaturedStory(): Promise<Story | null> {
+  const params = new URLSearchParams({
+    select: "*",
+    is_published: "eq.true",
+    order: "created_at.desc",
+    limit: "40",
+  });
+
+  const url = `${SUPABASE_URL}/rest/v1/stories?${params.toString()}`;
+
+  try {
+    const response = await fetch(url, { method: "GET", headers: supabaseHeaders });
+    if (!response.ok) return null;
+    const data: Story[] = await response.json();
+    if (data.length === 0) return null;
+    const today = new Date();
+    const seed = today.getDate() + today.getMonth() * 31 + today.getFullYear() * 366;
+    return data[seed % data.length];
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Fetch a single story by its ID from Supabase.
  */
 export async function fetchStoryByIdFromSupabase(id: number): Promise<Story | null> {

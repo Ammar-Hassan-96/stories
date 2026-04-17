@@ -6,7 +6,7 @@ import {
   Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { BookOpen, User, Calendar } from "lucide-react-native";
+import { BookOpen, User, Calendar, Clock } from "lucide-react-native";
 import { formatArabicDate } from "../../types";
 import BlurImage from "../BlurImage";
 
@@ -17,6 +17,7 @@ interface TitlePageProps {
   title: string;
   author: string;
   createdAt: string;
+  readingTime?: number;
   imageUrl?: string;
   fontSize: number;
   isDark: boolean;
@@ -24,14 +25,11 @@ interface TitlePageProps {
   accentColor: string;
 }
 
-/**
- * The first page of the reader — shows the story cover image,
- * title, author, date, and a swipe hint.
- */
 const TitlePage: React.FC<TitlePageProps> = ({
   title,
   author,
   createdAt,
+  readingTime,
   imageUrl,
   fontSize,
   isDark,
@@ -39,11 +37,12 @@ const TitlePage: React.FC<TitlePageProps> = ({
   accentColor,
 }) => {
   const mutedColor = isDark ? "#8A7A90" : "#8A7B6D";
+  const metaFontSize = Math.max(11, fontSize - 5);
 
   return (
     <View style={styles.container}>
       {/* Cover image with gradient fade */}
-      {imageUrl && (
+      {imageUrl ? (
         <View style={styles.coverContainer}>
           <BlurImage
             uri={imageUrl}
@@ -56,7 +55,7 @@ const TitlePage: React.FC<TitlePageProps> = ({
             style={styles.coverGradient}
           />
         </View>
-      )}
+      ) : null}
 
       <View style={styles.content}>
         {/* Story title */}
@@ -75,8 +74,39 @@ const TitlePage: React.FC<TitlePageProps> = ({
         >
           {title}
         </Text>
+
         <BookOpen color={accentColor} size={25} />
         <View style={[styles.divider, { backgroundColor: accentColor }]} />
+
+        {/* Metadata row: author + date + reading time */}
+        <View style={styles.metaRow}>
+          {author ? (
+            <View style={styles.metaItem}>
+              <User color={mutedColor} size={12} />
+              <Text style={[styles.metaText, { color: mutedColor, fontSize: metaFontSize }]}>
+                {author}
+              </Text>
+            </View>
+          ) : null}
+
+          {createdAt ? (
+            <View style={styles.metaItem}>
+              <Calendar color={mutedColor} size={12} />
+              <Text style={[styles.metaText, { color: mutedColor, fontSize: metaFontSize }]}>
+                {formatArabicDate(createdAt)}
+              </Text>
+            </View>
+          ) : null}
+
+          {readingTime ? (
+            <View style={[styles.metaItem, styles.readingTimeChip, { borderColor: accentColor + "44" }]}>
+              <Clock color={accentColor} size={12} />
+              <Text style={[styles.metaText, { color: accentColor, fontSize: metaFontSize, fontWeight: "700" }]}>
+                {readingTime} دقيقة
+              </Text>
+            </View>
+          ) : null}
+        </View>
       </View>
     </View>
   );
@@ -117,31 +147,29 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 2,
     marginBottom: 20,
+    marginTop: 8,
   },
   metaRow: {
     flexDirection: "row-reverse",
-    gap: 24,
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 10,
     alignItems: "center",
   },
   metaItem: {
     flexDirection: "row-reverse",
     alignItems: "center",
-    gap: 6,
+    gap: 5,
   },
   metaText: {
     fontFamily: "Amiri_400Regular",
     writingDirection: "rtl",
   },
-  ornament: {
-    marginTop: 24,
-    paddingTop: 10,
-    alignItems: "center",
-  },
-  swipeHint: {
-    fontFamily: "Amiri_400Regular",
-    fontSize: 14,
-    marginTop: 24,
-    writingDirection: "rtl",
+  readingTimeChip: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useCallback, memo, useEffect } from "react";
+import React, { useCallback, memo, useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   RefreshControl,
   StyleSheet,
   ListRenderItemInfo,
+  TextInput,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -24,7 +25,7 @@ import Animated, {
 import { StoriesScreenProps } from "../types/navigation";
 import { Story } from "../types";
 import StoryItem from "../components/StoryItem";
-import { ChevronLeft, BookOpen } from "lucide-react-native";
+import { ChevronLeft, BookOpen, Search, X } from "lucide-react-native";
 import { useTheme } from "../services/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useStories } from "../hooks/useStories";
@@ -32,7 +33,7 @@ import { useStories } from "../hooks/useStories";
 const { width: screenWidth } = Dimensions.get("window");
 const columnWidth = screenWidth / 2;
 
-// Shimmer skeleton card for loading state
+// Shimmer skeleton card
 const SkeletonCard = memo(({ isDark, index }: { isDark: boolean; index: number }) => {
   const shimmer = useSharedValue(0);
 
@@ -67,7 +68,7 @@ const SkeletonCard = memo(({ isDark, index }: { isDark: boolean; index: number }
   );
 });
 
-// Footer loader shown while fetching next page
+// Footer loader
 const ListFooter = memo(
   ({ loadingMore, hasMore, isDark }: { loadingMore: boolean; hasMore: boolean; isDark: boolean }) => {
     if (!loadingMore && !hasMore) {
@@ -98,6 +99,34 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
   const { stories, loading, refreshing, loadingMore, hasMore, error, loadMore, refresh } =
     useStories(categoryId);
 
+  // ── Search ────────────────────────────────────────────────────
+  const [searchVisible, setSearchVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<TextInput>(null);
+  const searchHeight = useSharedValue(0);
+
+  const toggleSearch = useCallback(() => {
+    if (searchVisible) {
+      setSearchQuery("");
+      searchHeight.value = withTiming(0, { duration: 220 });
+      setTimeout(() => setSearchVisible(false), 220);
+    } else {
+      setSearchVisible(true);
+      searchHeight.value = withTiming(52, { duration: 220 });
+      setTimeout(() => searchInputRef.current?.focus(), 240);
+    }
+  }, [searchVisible, searchHeight]);
+
+  const searchBarStyle = useAnimatedStyle(() => ({
+    height: searchHeight.value,
+    opacity: interpolate(searchHeight.value, [0, 52], [0, 1]),
+    overflow: "hidden",
+  }));
+
+  const filteredStories = searchQuery.trim()
+    ? stories.filter((s) => s.title.includes(searchQuery.trim()))
+    : stories;
+
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<Story>) => (
       <StoryItem
@@ -112,13 +141,15 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
   const keyExtractor = useCallback((item: Story) => String(item.id), []);
 
   const onEndReached = useCallback(() => {
-    if (!loadingMore && hasMore) {
+    if (!loadingMore && hasMore && !searchQuery) {
       loadMore();
     }
-  }, [loadMore, loadingMore, hasMore]);
+  }, [loadMore, loadingMore, hasMore, searchQuery]);
 
   const bgColor = isDark ? "#0F0D1A" : "#C19A6B";
   const headerBg = isDark ? "#13101F" : "#C19A6B";
+  const iconColor = isDark ? "#F9FAFB" : "#3D2B1F";
+  const accentColor = isDark ? "#C8A96E" : "#8B5A2B";
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -126,24 +157,79 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
 
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header */}
-        <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: isDark ? "#2C2840" : "#C19A6B" }]}>
+        <View
+          style={[
+            styles.header,
+            {
+              backgroundColor: headerBg,
+              borderBottomColor: isDark ? "#2C2840" : "#C19A6B",
+            },
+          ]}
+        >
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={[styles.backBtn, { backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)" }]}
+            style={[styles.iconBtn, { backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)" }]}
           >
-            <ChevronLeft color={isDark ? "#F9FAFB" : "#3D2B1F"} size={22} />
+            <ChevronLeft color={iconColor} size={22} />
           </TouchableOpacity>
 
           <View style={styles.headerTitleContainer}>
-            <BookOpen color={isDark ? "#C8A96E" : "#8B5A2B"} size={18} />
+            <BookOpen color={accentColor} size={18} />
             <Text style={[styles.headerTitle, { color: isDark ? "#F0E6D3" : "#3D2B1F" }]}>
               {categoryName}
             </Text>
           </View>
+
+          <TouchableOpacity
+            onPress={toggleSearch}
+            style={[
+              styles.iconBtn,
+              {
+                backgroundColor: searchVisible
+                  ? accentColor + "28"
+                  : isDark
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(0,0,0,0.05)",
+              },
+            ]}
+          >
+            {searchVisible ? (
+              <X color={accentColor} size={20} />
+            ) : (
+              <Search color={iconColor} size={20} />
+            )}
+          </TouchableOpacity>
         </View>
 
-        {/* Loading skeletons */}
-        {loading ? (
+        {/* Animated search bar */}
+        <Animated.View style={[searchBarStyle, { backgroundColor: isDark ? "#1A1630" : "#EDE3D6" }]}>
+          <View style={styles.searchInputRow}>
+            <Search size={16} color={isDark ? "#6B5F7A" : "#9C8878"} style={{ marginLeft: 12 }} />
+            <TextInput
+              ref={searchInputRef}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="ابحث عن قصة..."
+              placeholderTextColor={isDark ? "#5A4F6A" : "#B0967E"}
+              style={[
+                styles.searchInput,
+                { color: isDark ? "#E8DDD0" : "#2C1810" },
+              ]}
+              textAlign="right"
+              returnKeyType="search"
+            />
+          </View>
+        </Animated.View>
+
+        {/* Search no-results state */}
+        {searchQuery.trim() !== "" && filteredStories.length === 0 && !loading ? (
+          <View style={styles.centerContainer}>
+            <Search color={isDark ? "#3D3D55" : "#C8B89A"} size={42} />
+            <Text style={[styles.emptyText, { color: isDark ? "#6B6B8A" : "#9C8167" }]}>
+              لا توجد نتائج لـ "{searchQuery}"
+            </Text>
+          </View>
+        ) : loading ? (
           <FlatList
             data={Array(6).fill(null)}
             numColumns={2}
@@ -159,7 +245,7 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={refresh}
-                tintColor={isDark ? "#C8A96E" : "#8B5A2B"}
+                tintColor={accentColor}
               />
             }
           >
@@ -168,7 +254,7 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
             </Text>
             <TouchableOpacity
               onPress={refresh}
-              style={[styles.retryBtn, { backgroundColor: isDark ? "#C8A96E" : "#8B5A2B" }]}
+              style={[styles.retryBtn, { backgroundColor: accentColor }]}
             >
               <Text style={styles.retryText}>إعادة المحاولة</Text>
             </TouchableOpacity>
@@ -177,11 +263,7 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
           <ScrollView
             contentContainerStyle={styles.centerContainer}
             refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={refresh}
-                tintColor={isDark ? "#C8A96E" : "#8B5A2B"}
-              />
+              <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={accentColor} />
             }
           >
             <BookOpen color={isDark ? "#3D3D55" : "#C8B89A"} size={48} />
@@ -191,7 +273,7 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
           </ScrollView>
         ) : (
           <FlatList
-            data={stories}
+            data={filteredStories}
             keyExtractor={keyExtractor}
             numColumns={2}
             contentContainerStyle={styles.listContent}
@@ -203,15 +285,13 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={refresh}
-                tintColor={isDark ? "#C8A96E" : "#8B5A2B"}
+                tintColor={accentColor}
               />
             }
             ListFooterComponent={
-              <ListFooter
-                loadingMore={loadingMore}
-                hasMore={hasMore}
-                isDark={isDark}
-              />
+              !searchQuery ? (
+                <ListFooter loadingMore={loadingMore} hasMore={hasMore} isDark={isDark} />
+              ) : null
             }
             removeClippedSubviews={true}
             maxToRenderPerBatch={8}
@@ -230,11 +310,11 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderBottomWidth: 1,
   },
-  backBtn: {
+  iconBtn: {
     padding: 8,
     borderRadius: 20,
   },
@@ -250,6 +330,22 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     textAlign: "right",
     writingDirection: "rtl",
+  },
+  searchInputRow: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 4,
+    height: 52,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    paddingHorizontal: 12,
+    paddingVertical: 0,
+    fontFamily: "Amiri_400Regular",
+    writingDirection: "rtl",
+    height: 52,
   },
   listContent: {
     paddingHorizontal: 0,
@@ -288,6 +384,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     writingDirection: "rtl",
     marginTop: 12,
+    fontFamily: "Amiri_400Regular",
   },
   footerLoader: {
     paddingVertical: 24,

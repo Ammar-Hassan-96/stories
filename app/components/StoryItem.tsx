@@ -1,11 +1,16 @@
 import React, { memo } from "react";
-import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-import { Story, getExcerpt } from "../types";
+import { Story, getReadingTime } from "../types";
 import { useTheme } from "../services/ThemeContext";
 import BlurImage from "./BlurImage";
+import { Clock } from "lucide-react-native";
 
-// Category accent colors for book spine visual
 const categoryAccent: Record<string, string> = {
   horror: "#8B0000",
   love: "#C2185B",
@@ -20,6 +25,7 @@ interface StoryItemProps {
   story: Story;
   onPress: () => void;
   width?: number;
+  index?: number;
 }
 
 const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
@@ -27,25 +33,35 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
   const cardWidth = width ? width - 16 : 160;
   const cardHeight = cardWidth * 1.45;
   const accentColor = categoryAccent[story.category_id] ?? "#5C4033";
+  const readingTime = getReadingTime(story.content);
+
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   return (
-    <View style={styles.bookWrapper}>
-      <TouchableOpacity
-        activeOpacity={.88}
+    <Animated.View style={[styles.bookWrapper, animStyle]}>
+      <Pressable
+        onPressIn={() => {
+          scale.value = withSpring(0.93, { damping: 15, stiffness: 400 });
+        }}
+        onPressOut={() => {
+          scale.value = withSpring(1, { damping: 10, stiffness: 180 });
+        }}
+        onPress={onPress}
         style={[
           styles.container,
           {
             width: cardWidth,
             height: cardHeight,
-            // 3D cover effect properties
             backgroundColor: isDark ? "#2C2A3A" : "#FFFFFF",
             borderColor: isDark ? "#12111A" : "#D1D1D1",
           },
         ]}
-        onPress={onPress}
       >
         <View style={styles.bookInner}>
-          {/* Book cover image with blur-load effect */}
+          {/* Cover image */}
           <BlurImage
             uri={story.image_url}
             width={cardWidth - 8}
@@ -54,22 +70,30 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
             style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
           />
 
-          {/* Inner shadow to give depth to the cover image */}
-          <View style={[styles.innerShadow, { 
-              borderColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)',
-          }]} />
+          {/* Inner shadow depth */}
+          <View
+            style={[
+              styles.innerShadow,
+              {
+                borderColor: isDark
+                  ? "rgba(0,0,0,0.5)"
+                  : "rgba(255,255,255,0.4)",
+              },
+            ]}
+          />
 
-          {/* Top gradient overlay — book title area */}
+          {/* Top gradient overlay */}
           <LinearGradient
             colors={["rgba(0,0,0,0.92)", "rgba(0,0,0,0.4)", "transparent"]}
             locations={[0, 0.65, 1]}
             style={styles.gradient}
           >
-            {/* Title — printed on the book cover */}
             <View style={styles.titleContainer}>
-              <View style={[styles.titleAccentLine, { backgroundColor: accentColor }]} />
+              <View
+                style={[styles.titleAccentLine, { backgroundColor: accentColor }]}
+              />
               <Text
-                style={[styles.title, { fontFamily: 'Amiri_700Bold' }]}
+                style={[styles.title, { fontFamily: "Amiri_700Bold" }]}
                 numberOfLines={3}
                 adjustsFontSizeToFit
                 minimumFontScale={0.8}
@@ -79,30 +103,43 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
               </Text>
             </View>
           </LinearGradient>
-        </View>
-        
-        {/* 3D Arabic Spine (On the Right) */}
-        <View style={[styles.spine, { backgroundColor: accentColor }]} />
-        {/* Spine highlight to simulate 3D curve */}
-        <LinearGradient 
-            colors={['rgba(255,255,255,0.4)', 'transparent', 'rgba(0,0,0,0.4)']} 
-            start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
-            style={styles.spineHighlight} 
-        />
-      </TouchableOpacity>
 
-      {/* Desk shadow under the book */}
-      <View style={[styles.deskShadow, { 
-        width: cardWidth * 0.75,
-        backgroundColor: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.15)',
-      }]} />
-    </View>
+          {/* Reading time badge — bottom left */}
+          <View style={styles.readingBadge}>
+            <Clock size={9} color="rgba(255,255,255,0.85)" />
+            <Text style={styles.readingBadgeText}>{readingTime} د</Text>
+          </View>
+        </View>
+
+        {/* 3D spine */}
+        <View style={[styles.spine, { backgroundColor: accentColor }]} />
+        <LinearGradient
+          colors={["rgba(255,255,255,0.4)", "transparent", "rgba(0,0,0,0.4)"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.spineHighlight}
+        />
+      </Pressable>
+
+      {/* Desk shadow */}
+      <View
+        style={[
+          styles.deskShadow,
+          {
+            width: cardWidth * 0.75,
+            backgroundColor: isDark
+              ? "rgba(0,0,0,0.5)"
+              : "rgba(0,0,0,0.15)",
+          },
+        ]}
+      />
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   bookWrapper: {
-    alignItems: 'center',
+    alignItems: "center",
     margin: 8,
   },
   container: {
@@ -118,14 +155,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: -4, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   bookInner: {
     flex: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
   innerShadow: {
     ...StyleSheet.absoluteFillObject,
@@ -135,12 +172,12 @@ const styles = StyleSheet.create({
   },
   spine: {
     width: 10,
-    height: '100%',
+    height: "100%",
     borderLeftWidth: 1,
-    borderLeftColor: 'rgba(0,0,0,0.6)',
+    borderLeftColor: "rgba(0,0,0,0.6)",
   },
   spineHighlight: {
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
     bottom: 0,
@@ -154,7 +191,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 10,
     paddingBottom: 70,
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   titleContainer: {
     borderLeftWidth: 0,
@@ -165,7 +202,7 @@ const styles = StyleSheet.create({
     width: 28,
     borderRadius: 1,
     marginBottom: 6,
-    alignSelf: 'center',
+    alignSelf: "center",
     opacity: 0.85,
   },
   title: {
@@ -174,11 +211,27 @@ const styles = StyleSheet.create({
     textAlign: "center",
     writingDirection: "rtl",
     lineHeight: 22,
-    // Embossed book look: subtle warm tint + text shadow
     textShadowColor: "rgba(0,0,0,0.8)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
     letterSpacing: 0.3,
+  },
+  readingBadge: {
+    position: "absolute",
+    bottom: 8,
+    left: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  readingBadgeText: {
+    color: "rgba(255,255,255,0.85)",
+    fontSize: 9,
+    fontWeight: "700",
   },
   deskShadow: {
     height: 6,

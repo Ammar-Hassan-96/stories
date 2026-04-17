@@ -31,6 +31,12 @@ export const getExcerpt = (content: string, maxLength: number = 80): string => {
   return cleaned.substring(0, maxLength).trim() + "...";
 };
 
+// Estimated Arabic reading time in minutes (~180 wpm)
+export const getReadingTime = (content: string): number => {
+  const words = content.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 180));
+};
+
 // Helper to format created_at date for Arabic display
 export const formatArabicDate = (isoDate: string): string => {
   try {

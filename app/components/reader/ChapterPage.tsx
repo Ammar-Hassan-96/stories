@@ -10,19 +10,16 @@ interface ChapterPageProps {
   isDark: boolean;
   accentColor: string;
   isLastPage: boolean;
+  isFirstChapter?: boolean;
 }
 
-/**
- * Renders one chapter of the story — an ornamental heading
- * followed by the chapter's paragraphs. The last page shows
- * a "تمت" (The End) ornament.
- */
 const ChapterPage: React.FC<ChapterPageProps> = ({
   page,
   fontSize,
   isDark,
   accentColor,
   isLastPage,
+  isFirstChapter = false,
 }) => {
   return (
     <View style={styles.container}>
@@ -30,29 +27,19 @@ const ChapterPage: React.FC<ChapterPageProps> = ({
       {page.heading && (
         <View style={styles.headingContainer}>
           <View style={styles.ornamentRow}>
-            <View
-              style={[styles.ornamentLine, { backgroundColor: accentColor }]}
-            />
+            <View style={[styles.ornamentLine, { backgroundColor: accentColor }]} />
             <BookOpen color={accentColor} size={16} />
-            <View
-              style={[styles.ornamentLine, { backgroundColor: accentColor }]}
-            />
+            <View style={[styles.ornamentLine, { backgroundColor: accentColor }]} />
           </View>
           <Text
             style={[
               styles.headingText,
-              {
-                color: accentColor,
-                fontSize: fontSize + 4,
-                lineHeight: (fontSize + 4) * 1.7,
-              },
+              { color: accentColor, fontSize: fontSize + 4, lineHeight: (fontSize + 4) * 1.7 },
             ]}
           >
             {page.heading}
           </Text>
-          <View
-            style={[styles.headingUnderline, { backgroundColor: accentColor }]}
-          />
+          <View style={[styles.headingUnderline, { backgroundColor: accentColor }]} />
         </View>
       )}
 
@@ -63,35 +50,20 @@ const ChapterPage: React.FC<ChapterPageProps> = ({
           fontSize={fontSize}
           isDark={isDark}
           accentColor={accentColor}
+          isFirstChapter={isFirstChapter}
         />
       </View>
 
       {/* "The End" ornament on the last page */}
       {isLastPage && (
         <View style={styles.endContainer}>
-          <View
-            style={[
-              styles.endLine,
-              { backgroundColor: isDark ? "#3A3A3A" : "#D1C8B8" },
-            ]}
-          />
+          <View style={[styles.endLine, { backgroundColor: isDark ? "#3A3A3A" : "#D1C8B8" }]} />
           <Text
-            style={[
-              styles.endText,
-              {
-                color: isDark ? "#3A3A3A" : "#D1C8B8",
-                fontSize: fontSize - 4,
-              },
-            ]}
+            style={[styles.endText, { color: isDark ? "#3A3A3A" : "#D1C8B8", fontSize: fontSize - 4 }]}
           >
             تمت
           </Text>
-          <View
-            style={[
-              styles.endLine,
-              { backgroundColor: isDark ? "#3A3A3A" : "#D1C8B8" },
-            ]}
-          />
+          <View style={[styles.endLine, { backgroundColor: isDark ? "#3A3A3A" : "#D1C8B8" }]} />
         </View>
       )}
     </View>

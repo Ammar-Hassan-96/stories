@@ -1,43 +1,41 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
 import {
   View,
-  ScrollView,
+  Text,
   StatusBar,
   StyleSheet,
+  ScrollView,
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  useAnimatedScrollHandler,
+  interpolate,
+  Extrapolation,
+  runOnJS,
+  withTiming,
+  withDelay,
+  withSequence,
+  withSpring,
+} from "react-native-reanimated";
 import { StoryDetailsScreenProps } from "../types/navigation";
 import { useTheme } from "../services/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getReadingTime } from "../types";
+import { BookOpen } from "lucide-react-native";
 
-// Utils
 import {
   splitIntoPages,
   categoryAccent,
   defaultAccent,
 } from "../utils/storyContentParser";
 
-// Reader sub-components
 import ReaderTopBar from "../components/reader/ReaderTopBar";
-// import ReaderBottomBar from "../components/reader/ReaderBottomBar";
 import BookFrame from "../components/reader/BookFrame";
 import TitlePage from "../components/reader/TitlePage";
 import ChapterPage from "../components/reader/ChapterPage";
+import TableOfContents from "../components/reader/TableOfContents";
 
-/**
- * Story reader screen — displays the story as a vertical scrollable book.
- *
- * Architecture:
- *  ┌─────────────────────────────┐
- *  │  ReaderTopBar               │  ← back button + font controls
- *  ├─────────────────────────────┤
- *  │  Book body (ScrollView)     │  ← vertical scroll
- *  │    ┌───────────────────┐    │
- *  │    │  BookFrame overlay │    │  ← decorative border
- *  │    │  TitlePage         │    │  ← story cover
- *  │    │  ChapterPage (×N)  │    │  ← all chapters
- *  │    └───────────────────┘    │
- *  └─────────────────────────────┘
- */
 const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
   route,
   navigation,
@@ -46,28 +44,95 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
   const [fontSize, setFontSize] = useState(18);
   const { isDark } = useTheme();
 
-  // ── Theme colors ──────────────────────────────────────────────
   const accent = categoryAccent[story.category_id] ?? defaultAccent;
   const bgColor = isDark ? "#08070A" : "#C19A6B";
   const pageBg = isDark ? "#121017" : "#cec1b6ff";
   const inkColor = isDark ? "#4A4550" : "#C19A6B";
 
-  // ── Parse chapters ────────────────────────────────────────────
-  const chapters = useMemo(() => {
-    return splitIntoPages(story.content);
-  }, [story.content]);
+  const chapters = useMemo(() => splitIntoPages(story.content), [story.content]);
+  const readingTime = useMemo(() => getReadingTime(story.content), [story.content]);
 
-  // ── Font size controls ────────────────────────────────────────
-  const incFontSize = useCallback(
-    () => setFontSize((v) => Math.min(28, v + 1)),
-    []
-  );
-  const decFontSize = useCallback(
-    () => setFontSize((v) => Math.max(14, v - 1)),
-    []
-  );
+  const incFontSize = useCallback(() => setFontSize((v) => Math.min(28, v + 1)), []);
+  const decFontSize = useCallback(() => setFontSize((v) => Math.max(14, v - 1)), []);
 
-  // ── Render ────────────────────────────────────────────────────
+  // ── Table of Contents ─────────────────────────────────────────
+  const [tocVisible, setTocVisible] = useState(false);
+  const [currentChapter, setCurrentChapter] = useState(0);
+
+  // Scroll ref — regular React ref for programmatic scrollTo
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  // Y positions of each chapter within the scroll content
+  const chapterPositionsRef = useRef<number[]>([]);
+
+  const jumpToChapter = useCallback((index: number) => {
+    setCurrentChapter(index);
+    const y = chapterPositionsRef.current[index];
+    if (y != null) {
+      // Small delay so the ToC sheet closes first
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({ x: 0, y, animated: true });
+      }, 320);
+    }
+  }, []);
+
+  // ── Reading progress ──────────────────────────────────────────
+  const scrollProgress = useSharedValue(0);
+  const progressTrackWidth = useSharedValue(0);
+
+  // ── Reading completion celebration ────────────────────────────
+  const [completedVisible, setCompletedVisible] = useState(false);
+  const completedOpacity = useSharedValue(0);
+  const completedScale = useSharedValue(0.8);
+  const hasCompleted = useRef(false);
+
+  const triggerCompletion = useCallback(() => {
+    setCompletedVisible(true);
+    completedOpacity.value = withSequence(
+      withTiming(1, { duration: 500 }),
+      withDelay(2800, withTiming(0, { duration: 600 }))
+    );
+    completedScale.value = withSpring(1, { damping: 12, stiffness: 200 });
+    setTimeout(() => {
+      setCompletedVisible(false);
+      completedScale.value = 0.8;
+    }, 4000);
+  }, [completedOpacity, completedScale]);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      const { contentOffset, contentSize, layoutMeasurement } = event;
+      const maxScroll = contentSize.height - layoutMeasurement.height;
+      const progress = maxScroll > 0
+        ? Math.min(contentOffset.y / maxScroll, 1)
+        : 0;
+      scrollProgress.value = progress;
+
+      if (progress >= 0.98 && !hasCompleted.current) {
+        hasCompleted.current = true;
+        runOnJS(triggerCompletion)();
+      }
+    },
+  });
+
+  const progressFillStyle = useAnimatedStyle(() => ({
+    width: scrollProgress.value * progressTrackWidth.value,
+  }));
+
+  const progressBarOpacity = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      scrollProgress.value,
+      [0, 0.015],
+      [0, 1],
+      Extrapolation.CLAMP
+    ),
+  }));
+
+  const completedBadgeStyle = useAnimatedStyle(() => ({
+    opacity: completedOpacity.value,
+    transform: [{ scale: completedScale.value }],
+  }));
+
   return (
     <View style={[styles.screen, { backgroundColor: bgColor }]}>
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
@@ -79,7 +144,25 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
           onGoBack={() => navigation.goBack()}
           onIncrease={incFontSize}
           onDecrease={decFontSize}
+          onOpenToC={chapters.length > 1 ? () => setTocVisible(true) : undefined}
+          chapterInfo={chapters.length > 1 ? { current: currentChapter, total: chapters.length } : undefined}
         />
+
+        {/* Reading progress bar */}
+        <Animated.View
+          style={[
+            styles.progressTrack,
+            { backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)" },
+            progressBarOpacity,
+          ]}
+          onLayout={({ nativeEvent }) => {
+            progressTrackWidth.value = nativeEvent.layout.width;
+          }}
+        >
+          <Animated.View
+            style={[styles.progressFill, { backgroundColor: accent.primary }, progressFillStyle]}
+          />
+        </Animated.View>
 
         {/* Book body */}
         <View style={[styles.physicalBook, { backgroundColor: pageBg }]}>
@@ -90,49 +173,82 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
             ]}
           />
 
-          <ScrollView
+          {/* Use regular ScrollView so we can call scrollTo programmatically */}
+          <Animated.ScrollView
+            ref={scrollViewRef as any}
             style={{ flex: 1 }}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
+            onScroll={scrollHandler}
+            scrollEventThrottle={16}
           >
-            {/* Title / Cover section */}
             <TitlePage
               title={story.title}
               author={story.author}
               createdAt={story.created_at}
-              imageUrl={story.image_url}
+              readingTime={readingTime}
+              imageUrl={story.image_url ?? undefined}
               fontSize={fontSize}
               isDark={isDark}
               pageBg={pageBg}
               accentColor={accent.primary}
             />
 
-            {/* All chapters rendered vertically */}
             {chapters.map((chapter, index) => (
-              <ChapterPage
+              <View
                 key={`chapter-${index}`}
-                page={chapter}
-                fontSize={fontSize}
-                isDark={isDark}
-                accentColor={accent.primary}
-                isLastPage={index === chapters.length - 1}
-              />
+                onLayout={(e) => {
+                  chapterPositionsRef.current[index] = e.nativeEvent.layout.y;
+                }}
+              >
+                <ChapterPage
+                  page={chapter}
+                  fontSize={fontSize}
+                  isDark={isDark}
+                  accentColor={accent.primary}
+                  isLastPage={index === chapters.length - 1}
+                  isFirstChapter={index === 0}
+                />
+              </View>
             ))}
-          </ScrollView>
+          </Animated.ScrollView>
 
           <BookFrame inkColor={inkColor} pageBg={pageBg} />
-        </View>
 
-        {/* Bottom navigation bar — commented out for vertical scroll mode */}
-        {/* <ReaderBottomBar
-          currentPageIndex={currentPageIndex}
-          totalPages={totalPages}
+          {/* Reading completion badge */}
+          {completedVisible && (
+            <Animated.View
+              style={[
+                styles.completedBadge,
+                {
+                  backgroundColor: isDark
+                    ? "rgba(18,16,23,0.92)"
+                    : "rgba(244,239,230,0.95)",
+                  borderColor: accent.primary + "55",
+                },
+                completedBadgeStyle,
+              ]}
+            >
+              <BookOpen color={accent.primary} size={18} />
+              <Text style={[styles.completedText, { color: accent.primary }]}>
+                اكتملت القراءة
+              </Text>
+            </Animated.View>
+          )}
+        </View>
+      </SafeAreaView>
+
+      {/* Table of Contents bottom sheet — rendered outside the book for full-screen overlay */}
+      {tocVisible && (
+        <TableOfContents
+          chapters={chapters}
+          currentChapter={currentChapter}
           isDark={isDark}
           accentColor={accent.primary}
-          onNext={goNext}
-          onPrev={goPrev}
-        /> */}
-      </SafeAreaView>
+          onSelectChapter={jumpToChapter}
+          onClose={() => setTocVisible(false)}
+        />
+      )}
     </View>
   );
 };
@@ -140,6 +256,14 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+  },
+  progressTrack: {
+    height: 3,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: 3,
+    borderRadius: 2,
   },
   physicalBook: {
     flex: 1,
@@ -167,6 +291,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     paddingTop: 36,
     paddingBottom: 40,
+  },
+  completedBadge: {
+    position: "absolute",
+    bottom: 28,
+    alignSelf: "center",
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 30,
+    borderWidth: 1,
+    elevation: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  completedText: {
+    fontFamily: "Amiri_700Bold",
+    fontSize: 15,
+    writingDirection: "rtl",
   },
 });
 

@@ -1,9 +1,10 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { NavigatorScreenParams } from "@react-navigation/native";
 import { Story } from "./index";
 
 export type RootDrawerParamList = {
-  HomeStack: undefined;
+  HomeStack: NavigatorScreenParams<RootStackParamList> | undefined;
   PrivacyPolicy: undefined;
   ContactUs: undefined;
 };
