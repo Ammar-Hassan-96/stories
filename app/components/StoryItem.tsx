@@ -10,16 +10,7 @@ import { Story, getReadingTime } from "../types";
 import { useTheme } from "../services/ThemeContext";
 import BlurImage from "./BlurImage";
 import { Clock } from "lucide-react-native";
-
-const categoryAccent: Record<string, string> = {
-  horror: "#8B0000",
-  love: "#C2185B",
-  "sci-fi": "#1565C0",
-  thriller: "#E65100",
-  islamic: "#1B5E20",
-  drama: "#4A148C",
-  kids: "#F57F17",
-};
+import { categoryAccent, defaultAccent } from "../utils/storyContentParser";
 
 interface StoryItemProps {
   story: Story;
@@ -32,7 +23,7 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
   const { isDark } = useTheme();
   const cardWidth = width ? width - 16 : 160;
   const cardHeight = cardWidth * 1.45;
-  const accentColor = categoryAccent[story.category_id] ?? "#5C4033";
+  const accentColor = (categoryAccent[story.category_id] ?? defaultAccent).primary;
   const readingTime = getReadingTime(story.content);
 
   const scale = useSharedValue(1);
@@ -144,17 +135,17 @@ const styles = StyleSheet.create({
   },
   container: {
     borderRadius: 6,
-    borderTopLeftRadius: 10,
+    borderTopLeftRadius: 12,
     borderBottomLeftRadius: 4,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12,
     borderWidth: 1,
     overflow: "hidden",
-    elevation: 8,
+    elevation: 10,
     shadowColor: "#000",
-    shadowOffset: { width: -4, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
+    shadowOffset: { width: -5, height: 8 },
+    shadowOpacity: 0.45,
+    shadowRadius: 8,
     flexDirection: "row-reverse",
   },
   bookInner: {
@@ -171,7 +162,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8,
   },
   spine: {
-    width: 10,
+    width: 12,
     height: "100%",
     borderLeftWidth: 1,
     borderLeftColor: "rgba(0,0,0,0.6)",
@@ -219,8 +210,8 @@ const styles = StyleSheet.create({
   readingBadge: {
     position: "absolute",
     bottom: 8,
-    left: 8,
-    flexDirection: "row",
+    right: 8,
+    flexDirection: "row-reverse",
     alignItems: "center",
     gap: 3,
     backgroundColor: "rgba(0,0,0,0.55)",

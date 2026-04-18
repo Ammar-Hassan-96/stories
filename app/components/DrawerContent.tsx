@@ -1,78 +1,132 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import Animated, { FadeInLeft, FadeInDown } from "react-native-reanimated";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import Animated, { FadeInRight, FadeInDown } from "react-native-reanimated";
 import { DrawerContentComponentProps, DrawerContentScrollView } from "@react-navigation/drawer";
 import { useTheme } from "../services/ThemeContext";
-import { Home, List, Shield, Mail, X } from "lucide-react-native";
+import { Home, List, Shield, Mail, X, Bookmark, Search, BookOpen } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const DrawerContent = (props: DrawerContentComponentProps) => {
   const { isDark } = useTheme();
 
-  const menuItems = [
+  const mainItems = [
     { name: "الرئيسية", icon: Home, route: "HomeStack", action: () => props.navigation.navigate("HomeStack") },
-    { name: "التصنيفات", icon: List, route: "HomeStack", action: () => {
-      props.navigation.navigate("HomeStack", { screen: 'Home' });
-    } },
+    { name: "البحث", icon: Search, route: "Search", action: () => props.navigation.navigate("Search") },
+    { name: "المفضلة", icon: Bookmark, route: "Bookmarks", action: () => props.navigation.navigate("Bookmarks") },
+  ];
+
+  const otherItems = [
     { name: "سياسة الخصوصية", icon: Shield, route: "PrivacyPolicy", action: () => props.navigation.navigate("PrivacyPolicy") },
     { name: "تواصل معنا", icon: Mail, route: "ContactUs", action: () => props.navigation.navigate("ContactUs") },
   ];
 
   const currentRouteName = props.state.routeNames[props.state.index];
+  const accentColor = isDark ? "#C8A96E" : "#8B5A2B";
+
+  const renderItem = (item: typeof mainItems[0], index: number) => {
+    const isActive = currentRouteName === item.route;
+    const IconComponent = item.icon;
+    return (
+      <Animated.View
+        key={index}
+        entering={FadeInRight.delay(index * 65).springify().damping(16).stiffness(130)}
+      >
+        <TouchableOpacity
+          style={[
+            drawerStyles.menuItem,
+            isActive && { backgroundColor: isDark ? "rgba(200,169,110,0.15)" : "rgba(139,90,43,0.08)" },
+          ]}
+          onPress={item.action}
+        >
+          <IconComponent
+            color={isActive ? accentColor : (isDark ? "#a1a1aa" : "#52525b")}
+            size={22}
+          />
+          <Text
+            style={[
+              drawerStyles.menuItemText,
+              { color: isActive ? accentColor : (isDark ? "#a1a1aa" : "#52525b") },
+              isActive && { fontWeight: "800" },
+            ]}
+          >
+            {item.name}
+          </Text>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
 
   return (
     <SafeAreaView className={`flex-1 ${isDark ? "bg-background-dark" : "bg-background-light"}`}>
       <Animated.View
         entering={FadeInDown.springify().damping(16)}
-        className="flex-row-reverse justify-between items-center px-4 py-4 border-b border-gray-200 dark:border-gray-800"
+        style={[drawerStyles.header, { borderBottomColor: isDark ? "#1E1E2E" : "#E5D5C5" }]}
       >
         <TouchableOpacity onPress={() => props.navigation.closeDrawer()}>
-          <X color={isDark ? "#ffffff" : "#000000"} size={28} />
+          <X color={isDark ? "#ffffff" : "#000000"} size={26} />
         </TouchableOpacity>
-        <Text className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
-          مكتبة القصص
-        </Text>
+        <View style={drawerStyles.logoRow}>
+          <BookOpen color={accentColor} size={22} />
+          <Text style={[drawerStyles.logoText, { color: isDark ? "#F0E6D3" : "#3D2B1F", fontFamily: "Amiri_700Bold" }]}>
+            مكتبة القصص
+          </Text>
+        </View>
       </Animated.View>
       <DrawerContentScrollView {...props} contentContainerStyle={{ paddingTop: 0 }}>
-        <View className="pt-4 px-2">
-          {menuItems.map((item, index) => {
-            const isActive = currentRouteName === item.route;
-            const IconComponent = item.icon;
-
-            return (
-              <Animated.View
-                key={index}
-                entering={FadeInLeft.delay(index * 65).springify().damping(16).stiffness(130)}
-              >
-                <TouchableOpacity
-                  className={`flex-row items-center py-4 px-4 mb-2 rounded-xl ${
-                    isActive ? (isDark ? "bg-white/10" : "bg-black/5") : ""
-                  }`}
-                  onPress={item.action}
-                >
-                  <IconComponent
-                    color={isActive ? (isDark ? "#ffffff" : "#000000") : (isDark ? "#a1a1aa" : "#52525b")}
-                    size={24}
-                    className="ml-4"
-                  />
-                  <Text
-                    style={{ writingDirection: "rtl" }}
-                    className={`text-lg font-semibold text-right ${
-                      isActive
-                        ? isDark ? "text-white" : "text-black"
-                        : isDark ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
-                    {item.name}
-                  </Text>
-                </TouchableOpacity>
-              </Animated.View>
-            );
-          })}
+        <View style={drawerStyles.section}>
+          {mainItems.map(renderItem)}
+        </View>
+        <View style={[drawerStyles.divider, { backgroundColor: isDark ? "#1E1E2E" : "#E5D5C5" }]} />
+        <View style={drawerStyles.section}>
+          {otherItems.map((item, i) => renderItem(item, mainItems.length + i))}
         </View>
       </DrawerContentScrollView>
     </SafeAreaView>
   );
 };
+
+const drawerStyles = StyleSheet.create({
+  header: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
+  logoRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 8,
+  },
+  logoText: {
+    fontSize: 22,
+    writingDirection: "rtl",
+  },
+  section: {
+    paddingTop: 12,
+    paddingHorizontal: 10,
+  },
+  menuItem: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    marginBottom: 4,
+    borderRadius: 14,
+  },
+  menuItemText: {
+    fontSize: 17,
+    writingDirection: "rtl",
+    textAlign: "right",
+    fontWeight: "600",
+  },
+  divider: {
+    height: 1,
+    marginHorizontal: 20,
+    marginVertical: 8,
+  },
+});
 
 export default DrawerContent;

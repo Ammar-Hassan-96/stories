@@ -14,8 +14,8 @@ module.exports = {
           dark: "#8B6D43",
         },
         background: {
-          light: "#C19A6B", // Camel Color for light mode
-          dark: "#111827", // Dark Color for dark mode
+          light: "#EDE3D6", // Cream for light mode
+          dark: "#0F0D1A",  // Dark for dark mode
         },
         text: {
           light: "#111827", // Black for light mode

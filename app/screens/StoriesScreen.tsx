@@ -146,8 +146,8 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
     }
   }, [loadMore, loadingMore, hasMore, searchQuery]);
 
-  const bgColor = isDark ? "#0F0D1A" : "#C19A6B";
-  const headerBg = isDark ? "#13101F" : "#C19A6B";
+  const bgColor = isDark ? "#0F0D1A" : "#EDE3D6";
+  const headerBg = isDark ? "#13101F" : "#A8784E";
   const iconColor = isDark ? "#F9FAFB" : "#3D2B1F";
   const accentColor = isDark ? "#C8A96E" : "#8B5A2B";
 
@@ -204,7 +204,7 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
         {/* Animated search bar */}
         <Animated.View style={[searchBarStyle, { backgroundColor: isDark ? "#1A1630" : "#EDE3D6" }]}>
           <View style={styles.searchInputRow}>
-            <Search size={16} color={isDark ? "#6B5F7A" : "#9C8878"} style={{ marginLeft: 12 }} />
+            <Search size={16} color={isDark ? "#6B5F7A" : "#9C8878"} style={{ marginRight: 12 }} />
             <TextInput
               ref={searchInputRef}
               value={searchQuery}
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   headerTitleContainer: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "center",
     gap: 8,
     paddingRight: 8,
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   },
   searchInputRow: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "center",
     paddingHorizontal: 4,
     height: 52,

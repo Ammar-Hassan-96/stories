@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { BookOpen } from "lucide-react-native";
 import ParagraphRenderer from "./ParagraphRenderer";
 import { PageData } from "../../utils/storyContentParser";
 
@@ -11,7 +10,11 @@ interface ChapterPageProps {
   accentColor: string;
   isLastPage: boolean;
   isFirstChapter?: boolean;
+  chapterIndex?: number;
 }
+
+const toArabicNum = (n: number): string =>
+  (n + 1).toString().replace(/[0-9]/g, (d) => "٠١٢٣٤٥٦٧٨٩"[parseInt(d)]);
 
 const ChapterPage: React.FC<ChapterPageProps> = ({
   page,
@@ -20,26 +23,37 @@ const ChapterPage: React.FC<ChapterPageProps> = ({
   accentColor,
   isLastPage,
   isFirstChapter = false,
+  chapterIndex = 0,
 }) => {
+  const mutedColor = isDark ? "#3A3848" : "#C8B8A2";
+
   return (
     <View style={styles.container}>
       {/* Chapter heading with ornamental decoration */}
       {page.heading && (
         <View style={styles.headingContainer}>
+          {/* Top ornament: ─── ✦ ─── */}
           <View style={styles.ornamentRow}>
             <View style={[styles.ornamentLine, { backgroundColor: accentColor }]} />
-            <BookOpen color={accentColor} size={16} />
+            <Text style={[styles.ornamentGlyph, { color: accentColor }]}>✦</Text>
             <View style={[styles.ornamentLine, { backgroundColor: accentColor }]} />
           </View>
+
           <Text
             style={[
               styles.headingText,
-              { color: accentColor, fontSize: fontSize + 4, lineHeight: (fontSize + 4) * 1.7 },
+              {
+                color: accentColor,
+                fontSize: fontSize + 5,
+                lineHeight: (fontSize + 5) * 1.7,
+              },
             ]}
           >
             {page.heading}
           </Text>
-          <View style={[styles.headingUnderline, { backgroundColor: accentColor }]} />
+
+          {/* Bottom rule */}
+          <View style={[styles.headingRule, { backgroundColor: accentColor }]} />
         </View>
       )}
 
@@ -57,14 +71,21 @@ const ChapterPage: React.FC<ChapterPageProps> = ({
       {/* "The End" ornament on the last page */}
       {isLastPage && (
         <View style={styles.endContainer}>
-          <View style={[styles.endLine, { backgroundColor: isDark ? "#3A3A3A" : "#D1C8B8" }]} />
-          <Text
-            style={[styles.endText, { color: isDark ? "#3A3A3A" : "#D1C8B8", fontSize: fontSize - 4 }]}
-          >
-            تمت
+          <View style={[styles.endLine, { backgroundColor: mutedColor }]} />
+          <Text style={[styles.endGlyph, { color: mutedColor }]}>❦</Text>
+          <Text style={[styles.endText, { color: mutedColor, fontSize: fontSize - 3 }]}>
+            تمّت
           </Text>
-          <View style={[styles.endLine, { backgroundColor: isDark ? "#3A3A3A" : "#D1C8B8" }]} />
+          <Text style={[styles.endGlyph, { color: mutedColor }]}>❦</Text>
+          <View style={[styles.endLine, { backgroundColor: mutedColor }]} />
         </View>
+      )}
+
+      {/* Chapter page number at the bottom */}
+      {page.heading && (
+        <Text style={[styles.pageNum, { color: mutedColor, fontSize: fontSize - 5 }]}>
+          — {toArabicNum(chapterIndex)} —
+        </Text>
       )}
     </View>
   );
@@ -72,35 +93,40 @@ const ChapterPage: React.FC<ChapterPageProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginBottom: 24,
+    paddingBottom: 8,
   },
   headingContainer: {
     alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 12,
+    marginBottom: 24,
+    paddingBottom: 4,
   },
   ornamentRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginBottom: 10,
+    marginBottom: 14,
+    width: "60%",
   },
   ornamentLine: {
-    width: 30,
-    height: 1.5,
-    borderRadius: 1,
-    opacity: 0.5,
+    flex: 1,
+    height: 1,
+    opacity: 0.45,
+  },
+  ornamentGlyph: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   headingText: {
     fontFamily: "Amiri_700Bold",
     textAlign: "center",
     writingDirection: "rtl",
+    marginBottom: 12,
   },
-  headingUnderline: {
-    width: 40,
-    height: 2,
+  headingRule: {
+    width: 48,
+    height: 1.5,
     borderRadius: 1,
-    marginTop: 8,
     opacity: 0.4,
   },
   content: {
@@ -109,18 +135,33 @@ const styles = StyleSheet.create({
   endContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
-    marginTop: 40,
-    marginBottom: 20,
-    paddingHorizontal: 20,
+    gap: 10,
+    marginTop: 48,
+    marginBottom: 16,
+    paddingHorizontal: 16,
   },
   endLine: {
     flex: 1,
     height: 1,
+    opacity: 0.5,
+  },
+  endGlyph: {
+    fontSize: 14,
+    lineHeight: 18,
+    opacity: 0.7,
   },
   endText: {
     fontFamily: "Amiri_700Bold",
     writingDirection: "rtl",
+    opacity: 0.65,
+  },
+  pageNum: {
+    fontFamily: "Amiri_400Regular",
+    textAlign: "center",
+    writingDirection: "rtl",
+    marginTop: 20,
+    opacity: 0.5,
+    letterSpacing: 2,
   },
 });
 

@@ -16,8 +16,8 @@ const ParagraphRenderer: React.FC<ParagraphRendererProps> = ({
   accentColor,
   isFirstChapter = false,
 }) => {
-  const textColor = isDark ? "#E8DDD0" : "#1A1A1A";
-  const lineHeight = fontSize * 1.9;
+  const textColor = isDark ? "#E8DDD0" : "#1C1008";
+  const lineHeight = fontSize * 2.0;
 
   const renderInlineParts = (text: string) =>
     text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
@@ -39,18 +39,19 @@ const ParagraphRenderer: React.FC<ParagraphRendererProps> = ({
         if (isDropCap) {
           const dropChar = paragraph[0];
           const rest = paragraph.slice(1);
+          const dropCapSize = fontSize * 2.9;
+
           return (
             <Text
               key={pIdx}
-              style={[styles.paragraph, { fontSize, lineHeight, color: textColor, marginBottom: fontSize * 1.2 }]}
+              style={[styles.paragraph, { fontSize, lineHeight, color: textColor, marginBottom: fontSize * 1.1 }]}
             >
-              {/* Decorative drop cap — first character of the chapter */}
               <Text
                 style={{
                   fontFamily: "Amiri_700Bold",
-                  fontSize: fontSize * 2.9,
+                  fontSize: dropCapSize,
                   color: accentColor,
-                  lineHeight: fontSize * 3.1,
+                  lineHeight: dropCapSize * 1.1,
                 }}
               >
                 {dropChar}
@@ -63,7 +64,10 @@ const ParagraphRenderer: React.FC<ParagraphRendererProps> = ({
         return (
           <Text
             key={pIdx}
-            style={[styles.paragraph, { fontSize, lineHeight, color: textColor, marginBottom: fontSize * 1.2 }]}
+            style={[
+              styles.paragraph,
+              { fontSize, lineHeight, color: textColor, marginBottom: fontSize * 1.1 },
+            ]}
           >
             {renderInlineParts(paragraph)}
           </Text>
