@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   label: {
     color: "#FFFFFF",
     fontSize: 20,
-    fontWeight: "800",
+    fontFamily: "Amiri_700Bold",
     textAlign: "center",
     paddingBottom: 16,
     paddingHorizontal: 8,

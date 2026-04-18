@@ -1271,6 +1271,13 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@react-native-async-storage/async-storage@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmmirror.com/@react-native-async-storage/async-storage/-/async-storage-2.2.0.tgz"
+  integrity sha512-gvRvjR5JAaUZF8tv2Kcq/Gbt3JHwbKFYfmb445rhOj6NUMx3qPLixmDx5pZAyb9at1bYvJ4/eTUipU5aki45xw==
+  dependencies:
+    merge-options "^3.0.4"
+
 "@react-native-community/masked-view@^0.1.11":
   version "0.1.11"
   resolved "https://registry.npmmirror.com/@react-native-community/masked-view/-/masked-view-0.1.11.tgz"
@@ -2559,6 +2566,11 @@ expo-blur@~15.0.8:
   resolved "https://registry.npmmirror.com/expo-blur/-/expo-blur-15.0.8.tgz"
   integrity sha512-rWyE1NBRZEu9WD+X+5l7gyPRszw7n12cW3IRNAb5i6KFzaBp8cxqT5oeaphJapqURvcqhkOZn2k5EtBSbsuU7w==
 
+expo-clipboard@~8.0.8:
+  version "8.0.8"
+  resolved "https://registry.npmmirror.com/expo-clipboard/-/expo-clipboard-8.0.8.tgz"
+  integrity sha512-VKoBkHIpZZDJTB0jRO4/PZskHdMNOEz3P/41tmM6fDuODMpqhvyWK053X0ebspkxiawJX9lX33JXHBCvVsTTOA==
+
 expo-constants@~18.0.12, expo-constants@~18.0.13:
   version "18.0.13"
   resolved "https://registry.npmmirror.com/expo-constants/-/expo-constants-18.0.13.tgz"
@@ -2607,10 +2619,20 @@ expo-modules-core@3.0.29:
   dependencies:
     invariant "^2.2.4"
 
+expo-screen-capture@~8.0.9:
+  version "8.0.9"
+  resolved "https://registry.npmmirror.com/expo-screen-capture/-/expo-screen-capture-8.0.9.tgz"
+  integrity sha512-Xu3ZHlqxO2rEa/R5BOSyTBIJzgVA4sxzMf9jz03dSg5X/I9qwD984cSH9dABJY8NYLQmxKYUTN8jTbA9jzgcTw==
+
 expo-server@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmmirror.com/expo-server/-/expo-server-1.0.5.tgz"
   integrity sha512-IGR++flYH70rhLyeXF0Phle56/k4cee87WeQ4mamS+MkVAVP+dDlOHf2nN06Z9Y2KhU0Gp1k+y61KkghF7HdhA==
+
+expo-sharing@~14.0.8:
+  version "14.0.8"
+  resolved "https://registry.npmmirror.com/expo-sharing/-/expo-sharing-14.0.8.tgz"
+  integrity sha512-A1pPr2iBrxypFDCWVAESk532HK+db7MFXbvO2sCV9ienaFXAk7lIBm6bkqgE6vzRd9O3RGdEGzYx80cYlc089Q==
 
 expo-status-bar@~3.0.9:
   version "3.0.9"
@@ -3027,6 +3049,11 @@ is-number@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmmirror.com/is-number/-/is-number-7.0.0.tgz"
   integrity sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==
+
+is-plain-obj@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/is-plain-obj/-/is-plain-obj-2.1.0.tgz"
+  integrity sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
 
 is-wsl@^2.1.1, is-wsl@^2.2.0:
   version "2.2.0"
@@ -3454,6 +3481,13 @@ memoize-one@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmmirror.com/memoize-one/-/memoize-one-6.0.0.tgz"
   integrity sha512-rkpe71W0N0c0Xz6QD0eJETuWAJGnJ9afsl1srmwPrI+yBCkge5EycXXbYRyvL29zZVUWQCY7InPRCv3GDXuZNw==
+
+merge-options@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.npmmirror.com/merge-options/-/merge-options-3.0.4.tgz"
+  integrity sha512-2Sug1+knBjkaMsMgf1ctR1Ujx+Ayku4EdJN4Z+C2+JzoeF7A3OZ9KM2GY0CpQS51NR61LTurMJrRKPhSs3ZRTQ==
+  dependencies:
+    is-plain-obj "^2.1.0"
 
 merge-stream@^2.0.0:
   version "2.0.0"

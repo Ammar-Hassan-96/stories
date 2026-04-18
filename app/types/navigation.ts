@@ -7,6 +7,8 @@ export type RootDrawerParamList = {
   HomeStack: NavigatorScreenParams<RootStackParamList> | undefined;
   PrivacyPolicy: undefined;
   ContactUs: undefined;
+  Bookmarks: undefined;
+  Search: undefined;
 };
 
 export type RootStackParamList = {

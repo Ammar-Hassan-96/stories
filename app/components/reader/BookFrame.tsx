@@ -2,61 +2,39 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 interface BookFrameProps {
-  /** The ink/border color for the frame lines and corner ornaments. */
   inkColor: string;
-  /** Background color behind the corner ornaments so they blend with the page. */
   pageBg: string;
 }
 
-/**
- * Decorative double-border frame with corner ornaments (❖).
- * Overlaid on top of the book content area using absolute positioning.
- * Receives pointerEvents="none" from parent so it doesn't block touches.
- */
 const BookFrame: React.FC<BookFrameProps> = ({ inkColor, pageBg }) => {
   return (
     <View
-      style={[styles.outerFrame, { borderColor: inkColor }]}
       pointerEvents="none"
+      style={[styles.outerFrame, { borderColor: inkColor }]}
     >
+      {/* Inner double-border */}
       <View style={[styles.innerFrame, { borderColor: inkColor }]} />
 
-      {/* Corner ornaments */}
-      <View
-        style={[
-          styles.corner,
-          styles.topLeft,
-          { backgroundColor: pageBg, borderColor: inkColor },
-        ]}
-      >
-        <Text style={[styles.cornerSymbol, { color: inkColor }]}>❖</Text>
+      {/* Corner ornaments — ✦ */}
+      <View style={[styles.corner, styles.topLeft, { backgroundColor: pageBg }]}>
+        <Text style={[styles.cornerSymbol, { color: inkColor }]}>✦</Text>
       </View>
-      <View
-        style={[
-          styles.corner,
-          styles.topRight,
-          { backgroundColor: pageBg, borderColor: inkColor },
-        ]}
-      >
-        <Text style={[styles.cornerSymbol, { color: inkColor }]}>❖</Text>
+      <View style={[styles.corner, styles.topRight, { backgroundColor: pageBg }]}>
+        <Text style={[styles.cornerSymbol, { color: inkColor }]}>✦</Text>
       </View>
-      <View
-        style={[
-          styles.corner,
-          styles.bottomLeft,
-          { backgroundColor: pageBg, borderColor: inkColor },
-        ]}
-      >
-        <Text style={[styles.cornerSymbol, { color: inkColor }]}>❖</Text>
+      <View style={[styles.corner, styles.bottomLeft, { backgroundColor: pageBg }]}>
+        <Text style={[styles.cornerSymbol, { color: inkColor }]}>✦</Text>
       </View>
-      <View
-        style={[
-          styles.corner,
-          styles.bottomRight,
-          { backgroundColor: pageBg, borderColor: inkColor },
-        ]}
-      >
-        <Text style={[styles.cornerSymbol, { color: inkColor }]}>❖</Text>
+      <View style={[styles.corner, styles.bottomRight, { backgroundColor: pageBg }]}>
+        <Text style={[styles.cornerSymbol, { color: inkColor }]}>✦</Text>
+      </View>
+
+      {/* Mid-edge ornaments — top & bottom */}
+      <View style={[styles.midOrnament, styles.midTop, { backgroundColor: pageBg }]}>
+        <Text style={[styles.midSymbol, { color: inkColor }]}>◆</Text>
+      </View>
+      <View style={[styles.midOrnament, styles.midBottom, { backgroundColor: pageBg }]}>
+        <Text style={[styles.midSymbol, { color: inkColor }]}>◆</Text>
       </View>
     </View>
   );
@@ -65,36 +43,51 @@ const BookFrame: React.FC<BookFrameProps> = ({ inkColor, pageBg }) => {
 const styles = StyleSheet.create({
   outerFrame: {
     position: "absolute",
-    top: 14,
-    bottom: 14,
-    left: 14,
-    right: 14,
+    top: 12,
+    bottom: 12,
+    left: 12,
+    right: 12,
     borderWidth: 1.5,
   },
   innerFrame: {
     position: "absolute",
-    top: 4,
-    bottom: 4,
-    left: 4,
-    right: 4,
-    borderWidth: 0.8,
+    top: 5,
+    bottom: 5,
+    left: 5,
+    right: 5,
+    borderWidth: 0.7,
+    opacity: 0.55,
   },
   corner: {
     position: "absolute",
-    width: 26,
-    height: 26,
+    width: 22,
+    height: 22,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
   },
   cornerSymbol: {
-    fontSize: 16,
-    lineHeight: 20,
+    fontSize: 12,
+    lineHeight: 18,
   },
-  topLeft: { top: -10, left: -10 },
-  topRight: { top: -10, right: -10 },
-  bottomLeft: { bottom: -10, left: -10 },
-  bottomRight: { bottom: -10, right: -10 },
+  topLeft: { top: -9, left: -9 },
+  topRight: { top: -9, right: -9 },
+  bottomLeft: { bottom: -9, left: -9 },
+  bottomRight: { bottom: -9, right: -9 },
+  midOrnament: {
+    position: "absolute",
+    width: 18,
+    height: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    left: "50%",
+    marginLeft: -9,
+  },
+  midTop: { top: -8 },
+  midBottom: { bottom: -8 },
+  midSymbol: {
+    fontSize: 9,
+    lineHeight: 12,
+  },
 });
 
 export default BookFrame;

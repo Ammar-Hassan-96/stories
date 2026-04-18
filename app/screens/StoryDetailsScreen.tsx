@@ -1,9 +1,10 @@
-import React, { useState, useCallback, useMemo, useRef } from "react";
+import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import {
   View,
   Text,
   StatusBar,
   StyleSheet,
+  Alert,
   ScrollView,
 } from "react-native";
 import Animated, {
@@ -18,6 +19,7 @@ import Animated, {
   withSequence,
   withSpring,
 } from "react-native-reanimated";
+import { usePreventScreenCapture } from "expo-screen-capture";
 import { StoryDetailsScreenProps } from "../types/navigation";
 import { useTheme } from "../services/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -35,6 +37,8 @@ import BookFrame from "../components/reader/BookFrame";
 import TitlePage from "../components/reader/TitlePage";
 import ChapterPage from "../components/reader/ChapterPage";
 import TableOfContents from "../components/reader/TableOfContents";
+import { useStoryBookmark } from "../hooks/useBookmarks";
+import { addToHistory } from "../services/historyService";
 
 const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
   route,
@@ -43,6 +47,19 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
   const { story } = route.params;
   const [fontSize, setFontSize] = useState(18);
   const { isDark } = useTheme();
+  const { bookmarked, toggle: toggleBookmark } = useStoryBookmark(story);
+
+  usePreventScreenCapture();
+
+  useEffect(() => {
+    addToHistory(story);
+  }, [story.id]);
+
+  const handleBookmark = useCallback(async () => {
+    await toggleBookmark();
+    const msg = bookmarked ? "تم إزالة القصة من المفضلة" : "تم حفظ القصة في المفضلة";
+    Alert.alert("", msg, [{ text: "حسناً" }]);
+  }, [toggleBookmark, bookmarked]);
 
   const accent = categoryAccent[story.category_id] ?? defaultAccent;
   const bgColor = isDark ? "#08070A" : "#C19A6B";
@@ -59,7 +76,6 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
   const [tocVisible, setTocVisible] = useState(false);
   const [currentChapter, setCurrentChapter] = useState(0);
 
-  // Scroll ref — regular React ref for programmatic scrollTo
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Y positions of each chapter within the scroll content
@@ -69,7 +85,6 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
     setCurrentChapter(index);
     const y = chapterPositionsRef.current[index];
     if (y != null) {
-      // Small delay so the ToC sheet closes first
       setTimeout(() => {
         scrollViewRef.current?.scrollTo({ x: 0, y, animated: true });
       }, 320);
@@ -99,14 +114,28 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
     }, 4000);
   }, [completedOpacity, completedScale]);
 
+  // Chapter tracking runs on JS thread — JS refs are not accessible from Reanimated worklets
+  const updateChapterFromScroll = useCallback((scrollY: number) => {
+    const positions = chapterPositionsRef.current;
+    let active = 0;
+    for (let i = positions.length - 1; i >= 0; i--) {
+      if (positions[i] != null && scrollY >= positions[i] - 120) {
+        active = i;
+        break;
+      }
+    }
+    setCurrentChapter(active);
+  }, []);
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       const { contentOffset, contentSize, layoutMeasurement } = event;
+      const y = contentOffset.y;
       const maxScroll = contentSize.height - layoutMeasurement.height;
-      const progress = maxScroll > 0
-        ? Math.min(contentOffset.y / maxScroll, 1)
-        : 0;
+      const progress = maxScroll > 0 ? Math.min(y / maxScroll, 1) : 0;
       scrollProgress.value = progress;
+
+      runOnJS(updateChapterFromScroll)(y);
 
       if (progress >= 0.98 && !hasCompleted.current) {
         hasCompleted.current = true;
@@ -146,6 +175,8 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
           onDecrease={decFontSize}
           onOpenToC={chapters.length > 1 ? () => setTocVisible(true) : undefined}
           chapterInfo={chapters.length > 1 ? { current: currentChapter, total: chapters.length } : undefined}
+          onBookmark={handleBookmark}
+          isBookmarked={bookmarked}
         />
 
         {/* Reading progress bar */}
@@ -173,7 +204,6 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
             ]}
           />
 
-          {/* Use regular ScrollView so we can call scrollTo programmatically */}
           <Animated.ScrollView
             ref={scrollViewRef as any}
             style={{ flex: 1 }}
@@ -208,6 +238,7 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
                   accentColor={accent.primary}
                   isLastPage={index === chapters.length - 1}
                   isFirstChapter={index === 0}
+                  chapterIndex={index}
                 />
               </View>
             ))}
@@ -267,30 +298,32 @@ const styles = StyleSheet.create({
   },
   physicalBook: {
     flex: 1,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 6,
-    elevation: 8,
+    marginVertical: 10,
+    marginHorizontal: 14,
+    borderRadius: 4,
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
+    elevation: 14,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    shadowOffset: { width: -3, height: 8 },
+    shadowOpacity: 0.45,
+    shadowRadius: 12,
     overflow: "hidden",
     position: "relative",
   },
   bookBlockShadow: {
     position: "absolute",
-    top: 4,
-    bottom: -4,
-    left: -4,
-    width: 12,
-    borderRadius: 4,
+    top: 6,
+    bottom: -6,
+    left: -6,
+    width: 14,
+    borderRadius: 3,
     zIndex: -1,
   },
   scrollContent: {
-    paddingHorizontal: 40,
-    paddingTop: 36,
-    paddingBottom: 40,
+    paddingHorizontal: 36,
+    paddingTop: 40,
+    paddingBottom: 48,
   },
   completedBadge: {
     position: "absolute",

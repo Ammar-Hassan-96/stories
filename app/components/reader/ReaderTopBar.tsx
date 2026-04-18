@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { ChevronLeft, Minus, Plus, List } from "lucide-react-native";
+import { ChevronRight, Minus, Plus, List, Bookmark } from "lucide-react-native";
 
 interface ReaderTopBarProps {
   fontSize: number;
@@ -9,6 +9,8 @@ interface ReaderTopBarProps {
   onIncrease: () => void;
   onDecrease: () => void;
   onOpenToC?: () => void;
+  onBookmark?: () => void;
+  isBookmarked?: boolean;
   chapterInfo?: { current: number; total: number };
 }
 
@@ -22,6 +24,8 @@ const ReaderTopBar: React.FC<ReaderTopBarProps> = ({
   onIncrease,
   onDecrease,
   onOpenToC,
+  onBookmark,
+  isBookmarked,
   chapterInfo,
 }) => {
   const controlColor = isDark ? "#C8A96E" : "#7A5C43";
@@ -51,26 +55,49 @@ const ReaderTopBar: React.FC<ReaderTopBarProps> = ({
           },
         ]}
       >
-        <ChevronLeft color={isDark ? "#E0D5C5" : "#3D2A1C"} size={22} />
+        <ChevronRight color={isDark ? "#E0D5C5" : "#3D2A1C"} size={22} />
       </TouchableOpacity>
 
       {/* Center: chapter indicator (if available) */}
       {chapterInfo && chapterInfo.total > 1 ? (
-        <View style={styles.chapterIndicator}>
+        <View style={[styles.chapterIndicator, { borderColor: borderColor }]}>
           <Text style={[styles.chapterText, { color: mutedColor }]}>
-            {toArabicNumerals(chapterInfo.total)} / {toArabicNumerals(chapterInfo.current + 1)}
+            {toArabicNumerals(chapterInfo.current)} / {toArabicNumerals(chapterInfo.total)}
           </Text>
         </View>
       ) : (
         <View />
       )}
 
-      {/* Right: font controls + ToC */}
+      {/* Right: bookmark + share + font controls + ToC */}
       <View style={styles.rightGroup}>
+        {onBookmark && (
+          <TouchableOpacity
+            onPress={onBookmark}
+            style={[
+              styles.iconBtn,
+              {
+                borderColor: isBookmarked ? "#C8A96E" : borderColor,
+                borderWidth: 1,
+                marginLeft: 4,
+                backgroundColor: isBookmarked
+                  ? isDark ? "rgba(200,169,110,0.2)" : "rgba(139,90,43,0.12)"
+                  : "transparent",
+              },
+            ]}
+          >
+            <Bookmark
+              color={isBookmarked ? "#C8A96E" : controlColor}
+              size={16}
+              fill={isBookmarked ? "#C8A96E" : "none"}
+            />
+          </TouchableOpacity>
+        )}
+
         {onOpenToC && (
           <TouchableOpacity
             onPress={onOpenToC}
-            style={[styles.iconBtn, { borderColor, borderWidth: 1, marginLeft: 6 }]}
+            style={[styles.iconBtn, { borderColor, borderWidth: 1, marginLeft: 4 }]}
           >
             <List color={controlColor} size={17} />
           </TouchableOpacity>
@@ -129,8 +156,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   chapterIndicator: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 4,
+    borderWidth: 1,
+    borderRadius: 12,
+    opacity: 0.85,
   },
   chapterText: {
     fontSize: 13,
