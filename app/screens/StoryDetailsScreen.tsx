@@ -214,7 +214,7 @@ const StoryDetailsScreen: React.FC<StoryDetailsScreenProps> = ({
           >
             <TitlePage
               title={story.title}
-              author={story.author}
+              author={''}
               createdAt={story.created_at}
               readingTime={readingTime}
               imageUrl={story.image_url ?? undefined}

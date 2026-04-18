@@ -95,20 +95,20 @@ const drawerStyles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   logoRow: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
   logoText: {
     fontSize: 22,
-    writingDirection: "rtl",
+    writingDirection: "ltr",
   },
   section: {
     paddingTop: 12,
     paddingHorizontal: 10,
   },
   menuItem: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     gap: 14,
     paddingVertical: 14,

@@ -100,7 +100,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
           <Animated.View
             entering={FadeInDown.springify().damping(14).stiffness(110)}
-            style={{ alignItems: "flex-end" }}
+            style={{ alignItems: "flex-start" }}
           >
             <Text
               style={{ writingDirection: "rtl", fontFamily: "Amiri_700Bold" }}
@@ -192,7 +192,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 writingDirection: "rtl",
                 fontFamily: "Amiri_700Bold",
                 fontSize: 20,
-                textAlign: "right",
+                textAlign: "left",
                 color: isDark ? "#D4C8B5" : "#5C3D2E",
               }}
             >
@@ -225,20 +225,20 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
 const homeStyles = StyleSheet.create({
   sectionRow: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 24,
     marginBottom: 10,
   },
   sectionTitleRow: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
   sectionTitle: {
     fontSize: 20,
-    textAlign: "right",
+    textAlign: "left",
     writingDirection: "rtl",
   },
   historyCard: {
@@ -250,10 +250,10 @@ const homeStyles = StyleSheet.create({
   },
   historyMeta: {
     padding: 6,
-    alignItems: "flex-end",
+    alignItems: "flex-start",
   },
   historyTime: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     gap: 3,
     marginBottom: 4,
@@ -271,8 +271,8 @@ const homeStyles = StyleSheet.create({
     color: "#F0E6D3",
     fontSize: 11,
     fontFamily: "Amiri_700Bold",
-    textAlign: "right",
-    writingDirection: "rtl",
+    textAlign: "left",
+    writingDirection: "ltr",
     lineHeight: 16,
   },
 });

@@ -210,8 +210,8 @@ const styles = StyleSheet.create({
   readingBadge: {
     position: "absolute",
     bottom: 8,
-    right: 8,
-    flexDirection: "row-reverse",
+    left: 8,
+    flexDirection: "row",
     alignItems: "center",
     gap: 3,
     backgroundColor: "rgba(0,0,0,0.55)",

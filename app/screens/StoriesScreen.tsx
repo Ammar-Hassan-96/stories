@@ -172,14 +172,6 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
           >
             <ChevronLeft color={iconColor} size={22} />
           </TouchableOpacity>
-
-          <View style={styles.headerTitleContainer}>
-            <BookOpen color={accentColor} size={18} />
-            <Text style={[styles.headerTitle, { color: isDark ? "#F0E6D3" : "#3D2B1F" }]}>
-              {categoryName}
-            </Text>
-          </View>
-
           <TouchableOpacity
             onPress={toggleSearch}
             style={[
@@ -199,6 +191,14 @@ const StoriesScreen: React.FC<StoriesScreenProps> = ({ route, navigation }) => {
               <Search color={iconColor} size={20} />
             )}
           </TouchableOpacity>
+          <View style={styles.headerTitleContainer}>
+            <BookOpen color={accentColor} size={18} />
+            <Text style={[styles.headerTitle, { color: isDark ? "#F0E6D3" : "#3D2B1F" }]}>
+              {categoryName}
+            </Text>
+          </View>
+
+         
         </View>
 
         {/* Animated search bar */}
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   headerTitleContainer: {
     flex: 1,
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     gap: 8,
     paddingRight: 8,

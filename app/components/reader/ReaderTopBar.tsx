@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { ChevronRight, Minus, Plus, List, Bookmark } from "lucide-react-native";
+import { ChevronLeft, Minus, Plus, List, Bookmark } from "lucide-react-native";
 
 interface ReaderTopBarProps {
   fontSize: number;
@@ -55,7 +55,7 @@ const ReaderTopBar: React.FC<ReaderTopBarProps> = ({
           },
         ]}
       >
-        <ChevronRight color={isDark ? "#E0D5C5" : "#3D2A1C"} size={22} />
+        <ChevronLeft color={isDark ? "#E0D5C5" : "#3D2A1C"} size={22} />
       </TouchableOpacity>
 
       {/* Center: chapter indicator (if available) */}
