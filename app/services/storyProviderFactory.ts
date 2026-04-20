@@ -11,7 +11,7 @@ import { SupabaseStoryProvider } from "./SupabaseStoryProvider";
 //
 type DataSource = "json" | "supabase";
 
-const ACTIVE_SOURCE: DataSource = "supabase";
+const ACTIVE_SOURCE: DataSource = "json";
 
 // ─── Factory ─────────────────────────────────────────────────────────────────
 

@@ -4,7 +4,7 @@
  * export-stories-offline.js
  *
  * Fetches all published stories from Supabase, downloads & compresses images
- * to ≤100KB, and saves everything locally for offline use.
+ * to ≤200KB at quality ≥65 (no crop, full composition), and saves locally.
  *
  * Usage:  node scripts/export-stories-offline.js
  * Output: assets/stories/stories.json  +  assets/stories/images/*.jpg
@@ -23,7 +23,7 @@ const { execSync } = require("child_process");
 const SUPABASE_URL = "https://nxlgtyabymdqaaxwxexq.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_JOREjdBXwxruBHe0MYDesw_nBBFf4e3";
 const PAGE_SIZE = 100; // Larger pages for bulk export (fewer requests)
-const MAX_IMAGE_BYTES = 100 * 1024; // 100 KB
+const MAX_IMAGE_BYTES = 200 * 1024; // 200 KB — enough for quality 80
 const CONCURRENCY = 5; // Parallel image downloads
 const MAX_RETRIES = 3;
 
@@ -120,15 +120,16 @@ function downloadFile(url, destPath) {
 
 /**
  * Compress an image to ≤ MAX_IMAGE_BYTES using ImageMagick.
- * Tries progressively lower quality settings until size target is met.
+ * Resizes proportionally (no crop) then tries quality 82 → 75 → 70.
+ * Never crops the image — the full composition is always preserved.
  */
 function compressImage(inputPath, outputPath) {
-  const qualities = [80, 70, 60, 50, 40, 30, 20];
+  const qualities = [82, 75, 70, 65];
 
   for (const quality of qualities) {
     try {
       execSync(
-        `convert "${inputPath}" -resize "600x870^" -gravity center -crop "600x870+0+0" +repage -quality ${quality} -strip "${outputPath}"`,
+        `magick "${inputPath}" -resize "600x870>" -quality ${quality} -strip -sampling-factor 4:2:0 "${outputPath}"`,
         { stdio: "pipe" }
       );
       const stat = fs.statSync(outputPath);
@@ -136,21 +137,19 @@ function compressImage(inputPath, outputPath) {
         return { size: stat.size, quality };
       }
     } catch (err) {
-      // If convert fails, try next quality or bail
       continue;
     }
   }
 
-  // Last resort: aggressive resize + lowest quality
+  // Last resort: compress harder without resizing
   try {
     execSync(
-      `convert "${inputPath}" -resize "400x400>" -quality 20 -strip "${outputPath}"`,
+      `magick "${inputPath}" -resize "600x870>" -quality 60 -strip "${outputPath}"`,
       { stdio: "pipe" }
     );
     const stat = fs.statSync(outputPath);
-    return { size: stat.size, quality: 20 };
+    return { size: stat.size, quality: 65 };
   } catch {
-    // If all fails, just copy the original
     fs.copyFileSync(inputPath, outputPath);
     const stat = fs.statSync(outputPath);
     return { size: stat.size, quality: -1 };
@@ -201,7 +200,7 @@ async function main() {
 
   // 0. Check ImageMagick
   try {
-    execSync("convert --version", { stdio: "pipe" });
+    execSync("magick --version", { stdio: "pipe" });
   } catch {
     console.error("❌ ImageMagick not found. Install it: sudo apt install imagemagick");
     process.exit(1);

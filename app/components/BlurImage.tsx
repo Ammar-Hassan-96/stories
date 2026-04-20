@@ -102,6 +102,16 @@ const BlurImage: React.FC<BlurImageProps> = ({
         style={[StyleSheet.absoluteFill, { backgroundColor: placeholder, borderRadius }]}
       />
 
+      {/* When contain mode: permanent blurred cover background to fill empty space */}
+      {resizeMode === "contain" && (
+        <Image
+          source={imageSource}
+          style={[imageStyle]}
+          blurRadius={18}
+          resizeMode="cover"
+        />
+      )}
+
       {/* Blurred version shown while loading */}
       <Animated.Image
         source={imageSource}

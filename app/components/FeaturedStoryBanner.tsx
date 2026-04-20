@@ -59,6 +59,7 @@ const FeaturedStoryBanner: React.FC<FeaturedStoryBannerProps> = ({ story, onPres
         {/* Background Image */}
         <BlurImage
           uri={story.image_url}
+          resizeMode="contain"
           style={StyleSheet.absoluteFillObject as any}
         />
 

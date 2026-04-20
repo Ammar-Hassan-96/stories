@@ -8,7 +8,14 @@
       "Bash(npm install *)",
       "Bash(git fetch *)",
       "Bash(python3 *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(git push *)",
+      "Bash(sort -k5 -n)",
+      "Bash(awk '{sum += $5; count++} END {print \"avg:\", sum/count, \"bytes\", \"total:\", sum}')",
+      "WebFetch(domain:claude.ai)",
+      "Bash(identify C:/Dev/stories-main/assets/stories/images/100-islamic.jpg)",
+      "Bash(identify C:/Dev/stories-main/assets/stories/images/*.jpg)",
+      "Bash(awk '{print $3}')"
     ]
   }
 }

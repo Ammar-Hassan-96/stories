@@ -11,7 +11,8 @@ import { formatArabicDate } from "../../types";
 import BlurImage from "../BlurImage";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const COVER_HEIGHT = Math.round(SCREEN_WIDTH * 0.52);
+const COVER_WIDTH = SCREEN_WIDTH - 80;
+const COVER_HEIGHT = Math.round(COVER_WIDTH * 1.45);
 
 interface TitlePageProps {
   title: string;
@@ -47,9 +48,10 @@ const TitlePage: React.FC<TitlePageProps> = ({
         <View style={styles.coverContainer}>
           <BlurImage
             uri={imageUrl}
-            width={SCREEN_WIDTH - 140}
+            width={COVER_WIDTH}
             height={COVER_HEIGHT}
             borderRadius={4}
+            resizeMode="cover"
           />
           <LinearGradient
             colors={["transparent", pageBg]}
