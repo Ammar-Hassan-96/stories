@@ -128,7 +128,7 @@ function compressImage(inputPath, outputPath) {
   for (const quality of qualities) {
     try {
       execSync(
-        `convert "${inputPath}" -resize "800x800>" -quality ${quality} -strip "${outputPath}"`,
+        `convert "${inputPath}" -resize "600x870^" -gravity center -crop "600x870+0+0" +repage -quality ${quality} -strip "${outputPath}"`,
         { stdio: "pipe" }
       );
       const stat = fs.statSync(outputPath);
