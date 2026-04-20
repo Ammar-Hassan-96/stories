@@ -2,13 +2,14 @@ import React from "react";
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { User, Calendar, Clock } from "lucide-react-native";
 import { formatArabicDate } from "../../types";
-import BlurImage from "../BlurImage";
+import { imageMap } from "../../utils/imageMap";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const COVER_HEIGHT = Math.round(SCREEN_WIDTH * 0.52);
@@ -45,11 +46,10 @@ const TitlePage: React.FC<TitlePageProps> = ({
       {/* Cover image with gradient fade into page color */}
       {imageUrl ? (
         <View style={styles.coverContainer}>
-          <BlurImage
-            uri={imageUrl}
-            width={SCREEN_WIDTH - 140}
-            height={COVER_HEIGHT}
-            borderRadius={4}
+          <Image
+            source={imageMap[imageUrl] ?? { uri: imageUrl }}
+            style={{ width: SCREEN_WIDTH - 140, height: COVER_HEIGHT, borderRadius: 4 }}
+            resizeMode="cover"
           />
           <LinearGradient
             colors={["transparent", pageBg]}

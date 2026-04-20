@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Text, View, StyleSheet, Pressable, Image } from "react-native";
+import { Text, View, StyleSheet, Pressable, ImageBackground } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,7 +8,6 @@ import Animated, {
 import { LinearGradient } from "expo-linear-gradient";
 import { Story, getReadingTime } from "../types";
 import { useTheme } from "../services/ThemeContext";
-import BlurImage from "./BlurImage";
 import { imageMap } from "../utils/imageMap";
 import { Clock } from "lucide-react-native";
 import { categoryAccent, defaultAccent } from "../utils/storyContentParser";
@@ -55,12 +54,11 @@ const StoryItem: React.FC<StoryItemProps> = ({ story, onPress, width }) => {
         <View style={styles.bookInner}>
 
 
-          {/* Cover image */}
-          <BlurImage
-            uri={story.image_url}
-            borderRadius={0}
+          {/* Cover image — ImageBackground handles require() sizing correctly */}
+          <ImageBackground
+            source={imageMap[story.image_url] ?? { uri: story.image_url }}
+            style={StyleSheet.absoluteFillObject}
             resizeMode="cover"
-            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
           />
 
           {/* Inner shadow depth */}

@@ -23,7 +23,7 @@ const { execSync } = require("child_process");
 const SUPABASE_URL = "https://nxlgtyabymdqaaxwxexq.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_JOREjdBXwxruBHe0MYDesw_nBBFf4e3";
 const PAGE_SIZE = 100; // Larger pages for bulk export (fewer requests)
-const MAX_IMAGE_BYTES = 100 * 1024; // 100 KB
+const MAX_IMAGE_BYTES = 90 * 1024; // ~90 KB per image → ~30 MB total for 332 images
 const CONCURRENCY = 5; // Parallel image downloads
 const MAX_RETRIES = 3;
 
@@ -119,42 +119,63 @@ function downloadFile(url, destPath) {
 }
 
 /**
- * Compress an image to ≤ MAX_IMAGE_BYTES using ImageMagick.
- * Tries progressively lower quality settings until size target is met.
+ * Detect image format from file magic bytes and return the extension.
  */
-function compressImage(inputPath, outputPath) {
-  const qualities = [80, 70, 60, 50, 40, 30, 20];
+function detectImageFormat(filePath) {
+  const buf = Buffer.alloc(12);
+  const fd = fs.openSync(filePath, "r");
+  fs.readSync(fd, buf, 0, 12, 0);
+  fs.closeSync(fd);
 
-  for (const quality of qualities) {
+  // PNG: 89 50 4E 47
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "png";
+  // JPEG: FF D8 FF
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "jpg";
+  // WEBP: RIFF....WEBP
+  if (buf.toString("ascii", 0, 4) === "RIFF" && buf.toString("ascii", 8, 12) === "WEBP") return "webp";
+  // GIF: GIF8
+  if (buf.toString("ascii", 0, 4) === "GIF8") return "gif";
+  // BMP: BM
+  if (buf[0] === 0x42 && buf[1] === 0x4d) return "bmp";
+
+  return "png"; // fallback
+}
+
+/**
+ * Compress image to JPEG, reducing quality until it fits under MAX_IMAGE_BYTES.
+ * Keeps original dimensions — only reduces JPEG quality.
+ */
+function saveImage(inputPath, outputDir, baseName) {
+  const filename = `${baseName}.jpg`;
+  const outputPath = path.join(outputDir, filename);
+
+  // Try quality levels from 80 down to 20
+  for (let q = 80; q >= 20; q -= 10) {
     try {
       execSync(
-        `convert "${inputPath}" -resize "600x870^" -gravity center -crop "600x870+0+0" +repage -quality ${quality} -strip "${outputPath}"`,
+        `convert "${inputPath}" -quality ${q} "${outputPath}"`,
         { stdio: "pipe" }
       );
       const stat = fs.statSync(outputPath);
       if (stat.size <= MAX_IMAGE_BYTES) {
-        return { size: stat.size, quality };
+        return { filename, size: stat.size, quality: q };
       }
     } catch (err) {
-      // If convert fails, try next quality or bail
-      continue;
+      // continue to next quality level
     }
   }
 
-  // Last resort: aggressive resize + lowest quality
+  // If still too big after q=20, resize down to 400px wide
   try {
     execSync(
-      `convert "${inputPath}" -resize "400x400>" -quality 20 -strip "${outputPath}"`,
+      `convert "${inputPath}" -resize 400x -quality 50 "${outputPath}"`,
       { stdio: "pipe" }
     );
-    const stat = fs.statSync(outputPath);
-    return { size: stat.size, quality: 20 };
-  } catch {
-    // If all fails, just copy the original
+  } catch (err) {
     fs.copyFileSync(inputPath, outputPath);
-    const stat = fs.statSync(outputPath);
-    return { size: stat.size, quality: -1 };
   }
+  const stat = fs.statSync(outputPath);
+  return { filename, size: stat.size, quality: 0 };
 }
 
 /**
@@ -271,27 +292,26 @@ async function main() {
   let failed = 0;
 
   await processWithConcurrency(storiesWithImages, CONCURRENCY, async (story) => {
-    const filename = `${story.id}-${story.category_id}.jpg`;
-    const outputPath = path.join(IMAGES_DIR, filename);
+    const baseName = `${story.id}-${story.category_id}`;
     const tempPath = path.join(TEMP_DIR, `${story.id}_temp`);
 
     try {
       // Download
       await withRetry(() => downloadFile(story.image_url, tempPath));
 
-      // Compress
-      const result = compressImage(tempPath, outputPath);
+      // Save with detected original format (no re-encoding)
+      const result = saveImage(tempPath, IMAGES_DIR, baseName);
       compressed++;
 
       // Update story's image_url to local path
-      story.image_url = `assets/stories/images/${filename}`;
+      story.image_url = `assets/stories/images/${result.filename}`;
 
       // Clean up temp
       if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
     } catch (err) {
       failed++;
       log(`  ❌ Failed: story ${story.id} (${story.title}): ${err.message}`);
-      // Keep original URL if download/compress fails
+      // Keep original URL if download fails
     }
 
     processed++;
@@ -299,7 +319,7 @@ async function main() {
   });
 
   console.log("");
-  log(`✅ Compressed: ${compressed} | ❌ Failed: ${failed}`);
+  log(`✅ Saved: ${compressed} | ❌ Failed: ${failed}`);
 
   // 4. Write final JSON
   // Sort by category then display_order for consistency
@@ -318,7 +338,8 @@ async function main() {
   }
 
   // 6. Summary
-  const imageFiles = fs.readdirSync(IMAGES_DIR).filter((f) => f.endsWith(".jpg"));
+  const IMAGE_EXTS = [".png", ".jpg", ".webp", ".gif", ".bmp"];
+  const imageFiles = fs.readdirSync(IMAGES_DIR).filter((f) => IMAGE_EXTS.some((e) => f.endsWith(e)));
   const totalImgSize = imageFiles.reduce((sum, f) => {
     return sum + fs.statSync(path.join(IMAGES_DIR, f)).size;
   }, 0);
@@ -326,6 +347,9 @@ async function main() {
     const s = fs.statSync(path.join(IMAGES_DIR, f)).size;
     return s > max ? s : max;
   }, 0);
+
+  // 7. Generate imageMap.ts for React Native require() mapping
+  generateImageMap(imageFiles);
 
   console.log("\n╔══════════════════════════════════════════════════╗");
   console.log("║     ✅ Export Complete!                           ║");
@@ -337,6 +361,26 @@ async function main() {
   console.log(`║  JSON:        ${path.relative(PROJECT_ROOT, JSON_OUTPUT).padEnd(35)}║`);
   console.log(`║  Images dir:  ${path.relative(PROJECT_ROOT, IMAGES_DIR).padEnd(35)}║`);
   console.log("╚══════════════════════════════════════════════════╝\n");
+}
+
+/**
+ * Auto-generate app/utils/imageMap.ts based on actual downloaded files.
+ */
+function generateImageMap(imageFiles) {
+  log("🗺  Generating imageMap.ts...");
+  const imageMapPath = path.join(PROJECT_ROOT, "app", "utils", "imageMap.ts");
+
+  let content = `// AUTO-GENERATED by export-stories-offline.js — DO NOT EDIT\n`;
+  content += `export const imageMap: Record<string, any> = {\n`;
+
+  for (const file of imageFiles) {
+    const key = `assets/stories/images/${file}`;
+    content += `  '${key}': require('../../assets/stories/images/${file}'),\n`;
+  }
+
+  content += `};\n`;
+  fs.writeFileSync(imageMapPath, content, "utf-8");
+  log(`✅ imageMap.ts generated with ${imageFiles.length} entries`);
 }
 
 main().catch((err) => {
