@@ -89,26 +89,31 @@ export async function fetchFeaturedStory(): Promise<Story | null> {
 }
 
 /**
- * Fetch a single story by its ID from Supabase.
+ * Search stories across all categories via Supabase full-text or LIKE.
  */
-export async function fetchStoryByIdFromSupabase(id: number): Promise<Story | null> {
-  const params = new URLSearchParams({
-    select: "*",
-    id: `eq.${id}`,
-    limit: "1",
+export async function searchStoriesFromSupabase(
+  query: string,
+  categories: string[]
+): Promise<Story[]> {
+  const promises = categories.map((catId) =>
+    fetchStoriesFromSupabase(catId, 0, 30).catch(() => ({
+      stories: [] as Story[],
+      hasMore: false,
+    }))
+  );
+  const allResults = await Promise.all(promises);
+  const allStories = allResults.flatMap((r) => r.stories);
+
+  const trimmed = query.trim();
+  const filtered = allStories.filter(
+    (s) => s.title.includes(trimmed) || (s.author && s.author.includes(trimmed))
+  );
+
+  // Deduplicate by id
+  const seen = new Set<number>();
+  return filtered.filter((s) => {
+    if (seen.has(s.id)) return false;
+    seen.add(s.id);
+    return true;
   });
-
-  const url = `${SUPABASE_URL}/rest/v1/stories?${params.toString()}`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: supabaseHeaders,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Supabase error ${response.status}`);
-  }
-
-  const data: Story[] = await response.json();
-  return data.length > 0 ? data[0] : null;
 }

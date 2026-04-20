@@ -27,7 +27,7 @@ import { AppDrawerNavigationProp } from "../types/navigation";
 import { Story } from "../types";
 import StoryItem from "../components/StoryItem";
 import { StoryService } from "../services/StoryService";
-import { fetchStoriesFromSupabase } from "../services/supabaseClient";
+import { storyProvider } from "../services/storyProviderFactory";
 
 const { width: screenWidth } = Dimensions.get("window");
 const columnWidth = screenWidth / 2;
@@ -72,27 +72,9 @@ const SearchScreen: React.FC = () => {
     setSearched(true);
 
     try {
-      const promises = categories.map((cat) =>
-        fetchStoriesFromSupabase(cat.id, 0, 30).catch(() => ({ stories: [], hasMore: false }))
-      );
-      const allResults = await Promise.all(promises);
-      const allStories = allResults.flatMap((r) => r.stories);
-
-      // Fuzzy filter: match query in title or author
-      const trimmed = q.trim();
-      const filtered = allStories.filter(
-        (s) => s.title.includes(trimmed) || (s.author && s.author.includes(trimmed))
-      );
-
-      // Deduplicate by id
-      const seen = new Set<number>();
-      const unique = filtered.filter((s) => {
-        if (seen.has(s.id)) return false;
-        seen.add(s.id);
-        return true;
-      });
-
-      setResults(unique);
+      const catIds = categories.map((c) => c.id);
+      const stories = await storyProvider.searchStories(q, catIds);
+      setResults(stories);
     } catch {
       setResults([]);
     } finally {

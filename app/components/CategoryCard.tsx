@@ -17,13 +17,13 @@ interface CategoryCardProps {
 }
 
 const categoryImages: Record<string, any> = {
-  love: require("../../assets/categories/love.png"),
-  horror: require("../../assets/categories/horror.png"),
-  kids: require("../../assets/categories/kids.png"),
-  "sci-fi": require("../../assets/categories/scifi.png"),
-  thriller: require("../../assets/categories/thriller.png"),
-  islamic: require("../../assets/categories/religious.png"),
-  drama: require("../../assets/categories/drama.png"),
+  love: require("../../assets/categories/love_compressed.jpg"),
+  horror: require("../../assets/categories/horror_compressed.jpg"),
+  kids: require("../../assets/categories/kids_compressed.jpg"),
+  "sci-fi": require("../../assets/categories/scifi_compressed.jpg"),
+  thriller: require("../../assets/categories/thriller_compressed.jpg"),
+  islamic: require("../../assets/categories/religious_compressed.jpg"),
+  drama: require("../../assets/categories/drama_compressed.jpg"),
 };
 
 const CategoryCard: React.FC<CategoryCardProps> = ({

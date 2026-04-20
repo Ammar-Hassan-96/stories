@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
   },
   deleteBtn: {
     position: "absolute",
-    top: 12,
-    right: 12,
+    bottom: 12,
+    right: 70,
     width: 28,
     height: 28,
     borderRadius: 14,

@@ -8,6 +8,7 @@ import {
   ImageStyle,
 } from "react-native";
 import { useTheme } from "../services/ThemeContext";
+import { imageMap } from "../utils/imageMap";
 
 interface BlurImageProps {
   uri: string | null | undefined;
@@ -15,6 +16,7 @@ interface BlurImageProps {
   width?: number;
   height?: number;
   borderRadius?: number;
+  resizeMode?: "cover" | "contain" | "stretch" | "center";
 }
 
 const BlurImage: React.FC<BlurImageProps> = ({
@@ -23,6 +25,7 @@ const BlurImage: React.FC<BlurImageProps> = ({
   width,
   height,
   borderRadius = 0,
+  resizeMode = "cover",
 }) => {
   const { isDark } = useTheme();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -89,6 +92,9 @@ const BlurImage: React.FC<BlurImageProps> = ({
     );
   }
 
+  // Use require() mapping if it's a known offline image, otherwise treat as URL
+  const imageSource = uri && imageMap[uri] ? imageMap[uri] : { uri };
+
   return (
     <View style={containerStyle}>
       {/* Shimmer placeholder background */}
@@ -98,17 +104,17 @@ const BlurImage: React.FC<BlurImageProps> = ({
 
       {/* Blurred version shown while loading */}
       <Animated.Image
-        source={{ uri }}
+        source={imageSource}
         style={[imageStyle, { opacity: blurOpacity }]}
         blurRadius={25}
-        resizeMode="cover"
+        resizeMode={resizeMode}
       />
 
       {/* Sharp version that fades in on load */}
       <Animated.Image
-        source={{ uri }}
+        source={imageSource}
         style={[imageStyle, { opacity: sharpOpacity }]}
-        resizeMode="cover"
+        resizeMode={resizeMode}
         onLoad={onLoad}
         onError={onError}
       />

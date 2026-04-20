@@ -11,7 +11,7 @@ import { useTheme } from "../services/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { AppDrawerNavigationProp } from "../types/navigation";
-import { fetchFeaturedStory } from "../services/supabaseClient";
+import { storyProvider } from "../services/storyProviderFactory";
 import { Story, getReadingTime } from "../types";
 import { useReadingHistory } from "../hooks/useReadingHistory";
 import { useContinueReading } from "../hooks/useContinueReading";
@@ -45,7 +45,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const fullWidthCategory = categories[6];
 
   useEffect(() => {
-    fetchFeaturedStory().then(setFeaturedStory).catch(() => {});
+    storyProvider.fetchFeatured().then(setFeaturedStory).catch(() => {});
   }, []);
 
   useFocusEffect(useCallback(() => {

@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   banner: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderRadius: 14,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   left: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     gap: 12,
     flex: 1,

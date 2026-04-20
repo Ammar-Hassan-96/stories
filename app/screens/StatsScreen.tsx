@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     borderRadius: 20,
     padding: 20,
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     elevation: 4,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
 
   // Stats grid
   statsGrid: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     flexWrap: "wrap",
     paddingHorizontal: 10,
     marginTop: 16,
@@ -439,12 +439,13 @@ const styles = StyleSheet.create({
     marginTop: 16,
     borderRadius: 16,
     padding: 16,
+    direction: 'rtl',
   },
   sectionTitle: {
     fontSize: 17,
     fontFamily: "Amiri_700Bold",
     writingDirection: "rtl",
-    textAlign: "right",
+    textAlign: "left",
     marginBottom: 14,
   },
 
@@ -532,7 +533,7 @@ const styles = StyleSheet.create({
 
   // Achievements
   achievementsHeader: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 14,
@@ -542,12 +543,12 @@ const styles = StyleSheet.create({
     fontFamily: "Amiri_700Bold",
   },
   achievementsGrid: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
   },
   achievementItem: {
-    width: (SCREEN_WIDTH - 32 - 16 - 16) / 3,  // 3 per row
+    width: (SCREEN_WIDTH - 32 - 16 - 16) / 4,  // 3 per row
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderRadius: 12,
