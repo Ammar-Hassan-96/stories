@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "stories",
+    "name": "عالم القصص",
     "slug": "stories",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,19 +22,19 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.stories.app"
+      "package": "com.storiesworld.arabic"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "supportsRTL": true,
       "eas": {
-        "projectId": "b04232ac-23e7-4ba1-872d-1dfa3eaa0055"
+        "projectId": "a4c31078-4503-4234-bba9-5adc69ce8550"
       }
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "owner": "ammar.hassan"
   }
 }
