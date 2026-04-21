@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAS Internal Tickets — German Auto Service</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='47' fill='none' stroke='%23B8975A' stroke-width='3'/><g fill='none' stroke='%23B8975A' stroke-width='3'><line x1='50' y1='8' x2='50' y2='32'/><line x1='50' y1='68' x2='50' y2='92'/><line x1='8' y1='50' x2='32' y2='50'/><line x1='68' y1='50' x2='92' y2='50'/><line x1='20' y1='20' x2='37' y2='37'/><line x1='63' y1='63' x2='80' y2='80'/><line x1='80' y1='20' x2='63' y2='37'/><line x1='37' y1='63' x2='20' y2='80'/><circle cx='50' cy='50' r='16' fill='rgba(184,151,90,0.2)' stroke-width='2'/><circle cx='50' cy='50' r='6' fill='%23B8975A'/></g></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   GAS IT DESK — DESIGN SYSTEM
+   Dark/Light Luxury · Mercedes Star Palette
+   ═══════════════════════════════════════════ */
+
+/* ── DARK THEME (default) ── */
+[data-theme="dark"] {
+  --bg-base:     #0A0A0C;
+  --bg-surface:  #111114;
+  --bg-card:     #17171B;
+  --bg-elevated: #1E1E24;
+  --bg-input:    #242429;
+  --bg-hover:    rgba(184,151,90,0.06);
+
+  --border:      rgba(255,255,255,0.07);
+  --border-gold: rgba(184,151,90,0.22);
+  --border-focus:rgba(184,151,90,0.5);
+
+  --text-primary:   #F0F0F2;
+  --text-secondary: #9CA3AF;
+  --text-muted:     #6B7280;
+  --text-inverted:  #0A0A0C;
+
+  --gold:       #B8975A;
+  --gold-light: #D4AF72;
+  --gold-dim:   #7A6238;
+  --gold-glow:  rgba(184,151,90,0.10);
+
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.4);
+  --shadow-modal:0 24px 80px rgba(0,0,0,0.7);
+  --shadow-gold: 0 4px 20px rgba(184,151,90,0.3);
+
+  --topbar-bg: rgba(17,17,20,0.95);
+  --scrollbar-thumb: #3A3A43;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg-base:     #ECEEF2;
+  --bg-surface:  #FFFFFF;
+  --bg-card:     #FFFFFF;
+  --bg-elevated: #F0F2F5;
+  --bg-input:    #F7F8FA;
+  --bg-hover:    rgba(184,151,90,0.10);
+
+  --border:      rgba(0,0,0,0.12);
+  --border-gold: rgba(184,151,90,0.45);
+  --border-focus:rgba(184,151,90,0.65);
+
+  --text-primary:   #0D1117;
+  --text-secondary: #24292F;
+  --text-muted:     #57606A;
+  --text-inverted:  #FFFFFF;
+
+  --gold:       #996B2E;
+  --gold-light: #B8860B;
+  --gold-dim:   #7A5520;
+  --gold-glow:  rgba(153,107,46,0.12);
+
+  --shadow-card: 0 6px 20px rgba(0,0,0,0.12);
+  --shadow-modal:0 24px 80px rgba(0,0,0,0.2);
+  --shadow-gold: 0 6px 24px rgba(184,151,90,0.30);
+
+  --topbar-bg: rgba(255,255,255,0.95);
+  --scrollbar-thumb: #9CA3AF;
+}
+
+/* ── COMMON TOKENS ── */
+:root {
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --font-display: 'Playfair Display', serif;
+  --font-body:    'Tajawal', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+  --transition: 200ms cubic-bezier(0.4,0,0.2,1);
+  --success: #16A34A; --success-bg: rgba(22,163,74,0.12);
+  --warning: #D97706; --warning-bg: rgba(217,119,6,0.12);
+  --danger:  #DC2626; --danger-bg:  rgba(220,38,38,0.12);
+  --info:    #2563EB; --info-bg:    rgba(37,99,235,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+::selection { background: var(--gold-dim); color: white; }
+
+/* ════════════════════════════════════
+   LOADING SCREEN
+   ════════════════════════════════════ */
+#loadingScreen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg-base);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 24px;
+}
+.load-star { animation: loadPulse 1.6s ease-in-out infinite; }
+@keyframes loadPulse {
+  0%,100%{ opacity:.3; transform:scale(1); }
+  50%    { opacity:1;   transform:scale(1.08); }
+}
+.load-bar {
+  width: 180px; height: 2px;
+  background: var(--border);
+  border-radius: 1px; overflow: hidden;
+}
+.load-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  animation: loadBar 1.4s ease-in-out infinite;
+}
+@keyframes loadBar {
+  0%  { width:0%; transform:translateX(0); }
+  50% { width:60%; }
+  100%{ width:100%; }
+}
+.load-text { font-size: 11px; color: var(--text-muted); letter-spacing:.2em; text-transform:uppercase; }
+
+/* ════════════════════════════════════
+   LOGIN SCREEN
+   ════════════════════════════════════ */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  background: var(--bg-base);
+  overflow: hidden;
+}
+#loginScreen.visible { display: flex; }
+
+.login-ambient {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(184,151,90,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 40% at 15% 85%, rgba(184,151,90,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 30% 30% at 90% 10%, rgba(37,99,235,0.03) 0%, transparent 60%);
+}
+.login-grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(184,151,90,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184,151,90,0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 75% 75% at 50% 50%, black 40%, transparent 100%);
+}
+
+.login-card {
+  position: relative; z-index: 1;
+  width: 420px; max-width: calc(100vw - 32px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-xl);
+  padding: 48px 40px 40px;
+  box-shadow: var(--shadow-modal), 0 0 50px var(--gold-glow);
+  animation: cardReveal .7s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes cardReveal {
+  from{ opacity:0; transform:translateY(20px) scale(.97); }
+  to  { opacity:1; transform:translateY(0) scale(1); }
+}
+
+.login-brand { text-align:center; margin-bottom:36px; }
+.brand-star  { width:60px; height:60px; margin: 0 auto 20px; }
+.brand-star svg { width:60px; height:60px; }
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: .02em; margin-bottom: 4px;
+}
+.brand-sub { font-size: 11px; color: var(--text-muted); text-transform:uppercase; letter-spacing:.1em; }
+.brand-line {
+  width: 40px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 14px auto 0;
+}
+
+.f-label {
+  display:block; font-size:11px; font-weight:500;
+  color: var(--text-muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:7px;
+}
+.f-input {
+  width:100%; background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px; font-family: var(--font-body);
+  font-size: 14px; color: var(--text-primary);
+  outline: none; transition: var(--transition);
+  text-align: right; margin-bottom: 18px;
+}
+.f-input::placeholder { color: var(--text-muted); }
+.f-input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--gold-glow); }
+
+.btn-signin {
+  width:100%; margin-top:4px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+  background-size: 200% 100%;
+  border: none; border-radius: var(--radius-md);
+  padding: 14px; font-family: var(--font-body);
+  font-size: 15px; font-weight: 700;
+  color: #0A0A0C; cursor: pointer;
+  letter-spacing:.04em; transition: var(--transition);
+  position: relative; overflow: hidden;
+}
+.btn-signin:hover { background-position:100% 0; box-shadow: var(--shadow-gold); transform:translateY(-1px); }
+.btn-signin:active { transform:translateY(0); }
+.btn-signin:disabled { opacity:.6; pointer-events:none; }
+
+.login-error {
+  background: var(--danger-bg); border: 1px solid rgba(220,38,38,.25);
+  border-radius: var(--radius-md); padding: 10px 14px;
+  font-size: 13px; color: #F87171;
+  text-align: center; display: none; margin-bottom: 16px;
+}
+
+/* ════════════════════════════════════
+   APP SHELL
+   ════════════════════════════════════ */
+#appShell { display:none; min-height:100vh; flex-direction:column; }
+#appShell.on { display:flex; }
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 58px; min-height: 58px;
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 12px;
+  position: sticky; top:0; z-index:200;
+}
+
+.tb-brand { display:flex; align-items:center; gap:10px; flex-shrink:0; text-decoration:none; }
+.tb-star  { width:30px; height:30px; flex-shrink:0; }
+.tb-star svg { width:30px; height:30px; }
+.tb-names { display:flex; flex-direction:column; line-height:1.15; }
+.tb-name  { font-family:var(--font-display); font-size:14px; font-weight:700; color:var(--text-primary); letter-spacing:.02em; }
+.tb-sub   { font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.1em; }
+.tb-sep   { width:1px; height:28px; background:var(--border); flex-shrink:0; }
+
+.tb-nav {
+  display:flex; align-items:center; gap:2px;
+  flex:1; overflow-x:auto; scrollbar-width:none;
+}
+.tb-nav::-webkit-scrollbar { display:none; }
+
+.tb-nav-btn {
+  display:flex; align-items:center; gap:7px;
+  padding:7px 13px; border-radius:var(--radius-md);
+  border:none; background:transparent;
+  color:var(--text-secondary); font-family:var(--font-body);
+  font-size:13px; cursor:pointer; transition:var(--transition);
+  white-space:nowrap; flex-shrink:0;
+}
+.tb-nav-btn:hover { background:var(--bg-elevated); color:var(--text-primary); }
+.tb-nav-btn.active {
+  background: var(--gold-glow);
+  color: var(--gold);
+  border: 1px solid var(--border-gold);
+}
+.tb-nav-btn svg { width:14px; height:14px; }
+
+.tb-right { display:flex; align-items:center; gap:8px; margin-right:auto; }
+
+/* Theme toggle */
+.theme-toggle {
+  position: relative; width: 44px; height: 24px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 12px; cursor: pointer; transition: var(--transition);
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: var(--border-gold); }
+.theme-thumb {
+  position: absolute; top: 2px; right: 2px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--gold);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+[data-theme="light"] .theme-thumb { transform: translateX(-20px); }
+.theme-icon-dark, .theme-icon-light { position:absolute; font-size:10px; top:50%; transform:translateY(-50%); }
+.theme-icon-dark { left:5px; }
+.theme-icon-light { right:5px; }
+
+.icon-btn {
+  width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+  border-radius:var(--radius-md); border:1px solid var(--border);
+  background:var(--bg-elevated); color:var(--text-secondary);
+  cursor:pointer; transition:var(--transition); position:relative;
+}
+.icon-btn:hover { border-color:var(--border-gold); color:var(--gold); }
+.icon-btn svg { width:15px; height:15px; }
+
+.n-badge {
+  position:absolute; top:-5px; right:-5px;
+  min-width:17px; height:17px; padding:0 4px;
+  background:var(--danger); border-radius:9px;
+  font-size:9px; font-weight:700; color:white;
+  display:flex; align-items:center; justify-content:center;
+  border:2px solid var(--bg-surface);
+}
+
+.user-chip {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 10px 5px 7px;
+  border-radius:var(--radius-lg); border:1px solid var(--border);
+  background:var(--bg-elevated); cursor:pointer; transition:var(--transition);
+}
+.user-chip:hover { border-color:var(--border-gold); }
+.u-avatar {
+  width:26px; height:26px; border-radius:50%;
+  background:linear-gradient(135deg, var(--gold-dim), var(--gold));
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:#0A0A0C; flex-shrink:0;
+}
+.u-info { display:flex; flex-direction:column; line-height:1.15; }
+.u-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+.u-role { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; }
+
+/* ── CONTENT ── */
+.app-body { flex:1; min-height:0; overflow:hidden; display:flex; }
+.content   { flex:1; padding:28px 32px; overflow-y:auto; min-width:0; }
+
+/* ════════════════════════════════════
+   PAGES
+   ════════════════════════════════════ */
+.page { display:none; }
+.page.on { display:block; animation: fadeUp .25s ease both; }
+@keyframes fadeUp {
+  from{ opacity:0; transform:translateY(8px); }
+  to  { opacity:1; transform:translateY(0); }
+}
+
+.ph { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:28px; gap:16px; flex-wrap:wrap; }
+.ph-left { display:flex; flex-direction:column; gap:3px; }
+.ph-tag  { font-size:10px; color:var(--gold); text-transform:uppercase; letter-spacing:.15em; font-weight:500; }
+.ph-title{ font-family:var(--font-display); font-size:26px; font-weight:700; color:var(--text-primary); }
+.ph-sub  { font-size:13px; color:var(--text-muted); }
+.ph-right{ display:flex; gap:8px; align-items:center; }
+
+/* ── STATS ── */
+.stats-row {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px,1fr));
+  gap:14px; margin-bottom:24px;
+}
+.stat-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:18px;
+  transition:var(--transition); position:relative; overflow:hidden;
+  box-shadow: var(--shadow-card);
+}
+.stat-card::after {
+  content:''; position:absolute; top:0; right:0;
+  width:3px; height:100%;
+  background:var(--_acc, var(--gold)); border-radius:0 var(--radius-lg) var(--radius-lg) 0;
+  opacity:.5;
+}
+.stat-card:hover { transform:translateY(-2px); border-color:var(--border-gold); }
+.stat-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
+.stat-val   { font-family:var(--font-display); font-size:34px; font-weight:700; line-height:1; margin-bottom:4px; }
+.stat-hint  { font-size:11px; color:var(--text-muted); }
+
+/* ── TABLE ── */
+.tbl-wrap {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); overflow:hidden;
+  box-shadow: var(--shadow-card);
+}
+.tbl-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; border-bottom:1px solid var(--border); gap:10px; flex-wrap:wrap;
+}
+.tbl-head-title { font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--text-primary); }
+.tbl-filters { display:flex; gap:8px; flex-wrap:wrap; }
+
+.s-input, .s-select {
+  background:var(--bg-input); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:7px 12px;
+  font-family:var(--font-body); font-size:12px;
+  color:var(--text-primary); outline:none; transition:var(--transition);
+}
+.s-input  { width:200px; text-align:right; }
+.s-input::placeholder { color:var(--text-muted); }
+.s-input:focus, .s-select:focus { border-color:var(--border-focus); }
+.s-select { cursor:pointer; }
+.s-select option { background:var(--bg-elevated); }
+
+.data-tbl { width:100%; border-collapse:collapse; }
+.data-tbl th {
+  padding:10px 14px; text-align:right;
+  font-size:10px; font-weight:600; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:.1em;
+  border-bottom:1px solid var(--border);
+  background:var(--bg-elevated); white-space:nowrap;
+}
+.data-tbl td {
+  padding:13px 14px; border-bottom:1px solid var(--border);
+  font-size:13px; color:var(--text-primary); vertical-align:middle;
+}
+.data-tbl tr:last-child td { border-bottom:none; }
+.data-tbl tbody tr:hover td { background:var(--bg-hover); }
+.data-tbl tbody tr[onclick] { cursor:pointer; }
+
+/* ── BADGES ── */
+.badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 9px; border-radius:100px;
+  font-size:11px; font-weight:500; white-space:nowrap;
+}
+.b-open    { background:rgba(37,99,235,.12);  color:#60A5FA; border:1px solid rgba(37,99,235,.25); }
+.b-assign  { background:rgba(8,145,178,.12);  color:#22D3EE; border:1px solid rgba(8,145,178,.25); }
+.b-prog    { background:rgba(217,119,6,.12);  color:#FCD34D; border:1px solid rgba(217,119,6,.25); }
+.b-resolve { background:var(--success-bg);    color:#4ADE80; border:1px solid rgba(22,163,74,.25); }
+.b-closed  { background:rgba(107,114,128,.1); color:#9CA3AF; border:1px solid rgba(107,114,128,.2); }
+.b-escal   { background:var(--danger-bg);     color:#F87171; border:1px solid rgba(220,38,38,.25); }
+.b-crit    { background:var(--danger-bg);     color:#F87171; border:1px solid rgba(220,38,38,.25); }
+.b-high    { background:rgba(234,88,12,.12);  color:#FB923C; border:1px solid rgba(234,88,12,.25); }
+.b-med     { background:var(--warning-bg);    color:#FCD34D; border:1px solid rgba(217,119,6,.25); }
+.b-low     { background:var(--success-bg);    color:#4ADE80; border:1px solid rgba(22,163,74,.25); }
+.b-emp     { background:var(--info-bg);       color:#60A5FA; border:1px solid rgba(37,99,235,.25); }
+.b-admin   { background:rgba(139,92,246,.12); color:#C084FC; border:1px solid rgba(139,92,246,.25); }
+.b-mgr     { background:rgba(184,151,90,.12); color:var(--gold); border:1px solid var(--border-gold); }
+.b-active  { background:var(--success-bg);    color:#4ADE80; border:1px solid rgba(22,163,74,.25); }
+.b-inactive{ background:rgba(107,114,128,.1); color:#9CA3AF; border:1px solid rgba(107,114,128,.2); }
+
+/* ── LIGHT MODE BADGE OVERRIDES ── */
+[data-theme="light"] .b-open    { background:#DBEAFE; color:#1D4ED8; border-color:#BFDBFE; }
+[data-theme="light"] .b-assign  { background:#CFFAFE; color:#0E7490; border-color:#A5F3FC; }
+[data-theme="light"] .b-prog    { background:#FEF3C7; color:#92400E; border-color:#FDE68A; }
+[data-theme="light"] .b-resolve { background:#DCFCE7; color:#15803D; border-color:#BBF7D0; }
+[data-theme="light"] .b-closed  { background:#F3F4F6; color:#374151; border-color:#D1D5DB; }
+[data-theme="light"] .b-escal   { background:#FEE2E2; color:#B91C1C; border-color:#FECACA; }
+[data-theme="light"] .b-crit    { background:#FEE2E2; color:#B91C1C; border-color:#FECACA; }
+[data-theme="light"] .b-high    { background:#FFEDD5; color:#C2410C; border-color:#FED7AA; }
+[data-theme="light"] .b-med     { background:#FEF9C3; color:#854D0E; border-color:#FEF08A; }
+[data-theme="light"] .b-low     { background:#DCFCE7; color:#15803D; border-color:#BBF7D0; }
+[data-theme="light"] .b-emp     { background:#DBEAFE; color:#1D4ED8; border-color:#BFDBFE; }
+[data-theme="light"] .b-admin   { background:#F3E8FF; color:#6D28D9; border-color:#DDD6FE; }
+[data-theme="light"] .b-mgr     { background:#FEF3C7; color:#92400E; border-color:#FDE68A; }
+[data-theme="light"] .b-active  { background:#DCFCE7; color:#15803D; border-color:#BBF7D0; }
+[data-theme="light"] .b-inactive{ background:#F3F4F6; color:#6B7280; border-color:#D1D5DB; }
+
+/* ── BUTTONS ── */
+.btn {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:9px 16px; border-radius:var(--radius-md);
+  border:none; font-family:var(--font-body);
+  font-size:13px; font-weight:500; cursor:pointer;
+  transition:var(--transition); white-space:nowrap;
+}
+.btn svg { width:14px; height:14px; }
+.btn-gold {
+  background:linear-gradient(135deg, var(--gold), var(--gold-light));
+  color:#0A0A0C;
+}
+.btn-gold:hover { box-shadow:var(--shadow-gold); transform:translateY(-1px); }
+.btn-ghost {
+  background:var(--bg-elevated); border:1px solid var(--border);
+  color:var(--text-primary);
+}
+.btn-ghost:hover { border-color:var(--border-gold); color:var(--gold); }
+.btn-danger {
+  background:var(--danger-bg); border:1px solid rgba(220,38,38,.25);
+  color:#F87171;
+}
+.btn-danger:hover { background:rgba(220,38,38,.22); }
+
+/* ── MODAL ── */
+.modal-mask {
+  position:fixed; inset:0; z-index:500;
+  background:rgba(0,0,0,.65); backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.modal-mask.on { display:flex; }
+.modal-box {
+  background:var(--bg-surface); border:1px solid var(--border-gold);
+  border-radius:var(--radius-xl); width:100%; max-width:580px;
+  max-height:90vh; overflow-y:auto;
+  box-shadow: var(--shadow-modal);
+  animation: modalIn .3s cubic-bezier(.16,1,.3,1) both;
+}
+.modal-box.sm { max-width:420px; }
+@keyframes modalIn {
+  from{ opacity:0; transform:scale(.95) translateY(12px); }
+  to  { opacity:1; transform:scale(1) translateY(0); }
+}
+.modal-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 22px; border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:var(--bg-surface); z-index:1;
+}
+.modal-title { font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text-primary); }
+.modal-x {
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  border-radius:var(--radius-md); border:1px solid var(--border);
+  background:none; color:var(--text-muted); cursor:pointer; font-size:17px;
+  transition:var(--transition);
+}
+.modal-x:hover { border-color:rgba(220,38,38,.4); color:#F87171; }
+.modal-bd { padding:20px 22px; }
+.modal-ft { display:flex; gap:8px; padding:14px 22px; border-top:1px solid var(--border); }
+
+/* ── FORM ── */
+.fg { margin-bottom:16px; }
+.fg-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.fg-2 .full { grid-column:1/-1; }
+.fl {
+  display:block; font-size:11px; font-weight:500;
+  color:var(--text-muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px;
+}
+.fi, .fsel, .fta {
+  width:100%; background:var(--bg-input);
+  border:1px solid var(--border); border-radius:var(--radius-md);
+  padding:10px 13px; font-family:var(--font-body);
+  font-size:13px; color:var(--text-primary);
+  outline:none; transition:var(--transition); text-align:right;
+}
+.fi::placeholder, .fta::placeholder { color:var(--text-muted); }
+.fi:focus, .fsel:focus, .fta:focus { border-color:var(--border-focus); box-shadow:0 0 0 3px var(--gold-glow); }
+.fta { min-height:90px; resize:vertical; }
+.fsel option { background:var(--bg-elevated); }
+
+/* ── NOTIFICATION PANEL ── */
+.notif-panel {
+  position:fixed; top:62px; left:0;
+  width:340px; max-width:calc(100vw - 24px); background:var(--bg-surface);
+  border:1px solid var(--border-gold);
+  border-radius:var(--radius-xl);
+  box-shadow:var(--shadow-modal);
+  display:none; z-index:9000; overflow:hidden;
+  animation:dropDown .2s ease;
+}
+.notif-panel.on { display:block; }
+@keyframes dropDown {
+  from{ opacity:0; transform:translateY(-6px); }
+  to  { opacity:1; transform:translateY(0); }
+}
+.np-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:1px solid var(--border);
+}
+.np-title { font-size:13px; font-weight:600; color:var(--text-primary); }
+.np-readall { font-size:11px; color:var(--gold); background:none; border:none; cursor:pointer; }
+.np-list { max-height:300px; overflow-y:auto; }
+.notif-item {
+  padding:11px 16px; border-bottom:1px solid var(--border);
+  cursor:pointer; transition:var(--transition);
+  border-right:3px solid transparent;
+}
+.notif-item.unread { border-right-color:var(--gold); }
+.notif-item:hover { background:var(--bg-hover); }
+.ni-title { font-size:13px; color:var(--text-primary); margin-bottom:2px; }
+.ni-sub   { font-size:11px; color:var(--text-muted); }
+
+/* ── TICKET DETAIL ── */
+.detail-grid {
+  display:grid; grid-template-columns:1fr 270px; gap:20px;
+}
+@media(max-width:900px){ .detail-grid{ grid-template-columns:1fr; } }
+
+.dc {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:18px; margin-bottom:16px;
+  box-shadow:var(--shadow-card);
+}
+.dc-title {
+  font-size:10px; color:var(--gold); text-transform:uppercase;
+  letter-spacing:.12em; font-weight:600;
+  margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border);
+}
+
+.timeline { display:flex; flex-direction:column; gap:14px; }
+.tl-item  { display:flex; gap:11px; }
+.tl-dot   { width:9px; height:9px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:5px; }
+.tl-body  { flex:1; min-width:0; }
+.tl-meta  { display:flex; gap:7px; align-items:center; flex-wrap:wrap; margin-bottom:3px; }
+.tl-author{ font-size:13px; font-weight:600; color:var(--text-primary); }
+.tl-act   { font-size:12px; color:var(--text-muted); }
+.tl-time  { font-size:10px; color:var(--text-muted); font-family:var(--font-mono); }
+.tl-text  {
+  font-size:13px; color:var(--text-primary);
+  background:var(--bg-elevated); border-radius:var(--radius-md);
+  padding:9px 12px;
+}
+
+.comment-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px; box-shadow:var(--shadow-card); }
+.comment-input {
+  width:100%; background:var(--bg-input); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:10px 13px;
+  font-family:var(--font-body); font-size:13px; color:var(--text-primary);
+  outline:none; resize:none; height:76px; text-align:right;
+  transition:var(--transition); margin-bottom:10px;
+}
+.comment-input:focus { border-color:var(--border-focus); box-shadow:0 0 0 3px var(--gold-glow); }
+
+.meta-row {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:12px; padding:6px 0;
+  border-bottom:1px solid var(--border);
+}
+.meta-row:last-child { border-bottom:none; }
+.meta-key { color:var(--text-muted); }
+.meta-val { color:var(--text-primary); font-weight:500; text-align:left; }
+
+/* ── SLA ── */
+.sla-bar { height:5px; border-radius:3px; background:var(--bg-elevated); overflow:hidden; margin-top:4px; }
+.sla-fill{ height:100%; border-radius:3px; transition:width .5s ease; }
+.sla-ok  { background:var(--success); }
+.sla-warn{ background:var(--warning); }
+.sla-crit{ background:var(--danger); }
+
+/* ── USERS GRID ── */
+.users-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(275px,1fr)); gap:16px; }
+.user-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:18px; transition:var(--transition);
+  box-shadow:var(--shadow-card);
+}
+.user-card:hover { border-color:var(--border-gold); transform:translateY(-2px); }
+.uc-top { display:flex; align-items:center; gap:11px; margin-bottom:14px; }
+.uc-av {
+  width:42px; height:42px; border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:700; color:#0A0A0C; flex-shrink:0;
+}
+.uc-info { flex:1; min-width:0; }
+.uc-name { font-size:14px; font-weight:600; color:var(--text-primary); }
+.uc-role { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; }
+.uc-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-bottom:12px; }
+.ucs { text-align:center; background:var(--bg-elevated); border-radius:var(--radius-md); padding:7px 3px; }
+.ucs-v { font-size:18px; font-weight:700; color:var(--text-primary); font-family:var(--font-display); }
+.ucs-l { font-size:9px; color:var(--text-muted); text-transform:uppercase; }
+.uc-actions { display:flex; gap:6px; margin-top:10px; }
+
+/* ── CHARTS ── */
+.charts-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:18px; }
+.c4 { grid-column:span 4; }
+.c5 { grid-column:span 5; }
+.c6 { grid-column:span 6; }
+.c7 { grid-column:span 7; }
+.c12{ grid-column:span 12; }
+@media(max-width:1100px){ .c4,.c5,.c6,.c7{ grid-column:span 12; } }
+
+.chart-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:18px;
+  box-shadow:var(--shadow-card);
+}
+.ch-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; }
+.ch-title{ font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--text-primary); }
+.ch-sub  { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+.bar-chart { display:flex; align-items:flex-end; gap:7px; height:90px; }
+.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.bar-fill { width:100%; border-radius:3px 3px 0 0; background:linear-gradient(to top,var(--gold-dim),var(--gold)); min-height:3px; transition:height .7s cubic-bezier(.4,0,.2,1); }
+.bar-lbl { font-size:9px; color:var(--text-muted); }
+.bar-num { font-size:10px; color:var(--text-secondary); font-family:var(--font-mono); }
+
+.donut-wrap { display:flex; align-items:center; gap:16px; }
+.donut-legend { flex:1; display:flex; flex-direction:column; gap:7px; }
+.dl-item { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-secondary); }
+.dl-dot  { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.dl-val  { margin-right:auto; font-family:var(--font-mono); font-size:12px; color:var(--text-primary); }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align:center; padding:48px 24px; color:var(--text-muted); }
+.empty-state svg { width:44px; height:44px; opacity:.25; margin-bottom:14px; }
+.empty-state p { font-size:13px; }
+
+/* ── TICKET NUM ── */
+.tnum { font-family:var(--font-mono); font-size:12px; color:var(--gold); }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:22px; left:22px;
+  background:var(--bg-elevated); border:1px solid var(--border-gold);
+  border-radius:var(--radius-lg); padding:11px 18px 11px 14px;
+  display:flex; align-items:center; gap:10px;
+  min-width:260px; max-width:380px; z-index:9999;
+  box-shadow:0 8px 30px rgba(0,0,0,.35);
+  animation:toastIn .3s ease; cursor:pointer;
+}
+@keyframes toastIn {
+  from{ opacity:0; transform:translateY(12px); }
+  to  { opacity:1; transform:translateY(0); }
+}
+.toast-ico { font-size:17px; }
+.toast-txt { flex:1; font-size:13px; color:var(--text-primary); }
+
+/* ── CONFIRM DIALOG ── */
+.confirm-mask {
+  position:fixed; inset:0; z-index:600;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center;
+}
+.confirm-mask.on { display:flex; }
+.confirm-box {
+  background:var(--bg-surface); border:1px solid rgba(220,38,38,.3);
+  border-radius:var(--radius-xl); padding:28px; max-width:380px; width:90%;
+  box-shadow:var(--shadow-modal); text-align:center;
+  animation:modalIn .25s cubic-bezier(.16,1,.3,1) both;
+}
+.confirm-icon { font-size:40px; margin-bottom:14px; }
+.confirm-title{ font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--text-primary); margin-bottom:8px; }
+.confirm-msg  { font-size:13px; color:var(--text-secondary); margin-bottom:24px; line-height:1.7; }
+.confirm-btns { display:flex; gap:10px; justify-content:center; }
+
+/* ── REPORT ── */
+.report-section { margin-bottom:24px; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .content { padding:14px; }
+  .topbar  { padding:0 10px; gap:8px; }
+  .tb-sub, .tb-names .tb-sub { display:none; }
+  .tb-name { font-size:13px; }
+  .stats-row { grid-template-columns:1fr 1fr; }
+  .fg-2 { grid-template-columns:1fr; }
+  .tb-nav-btn { padding:6px 9px; font-size:12px; }
+  .u-info { display:none; }
+  .tb-sep { display:none; }
+}
+@media(max-width:480px){
+  .tb-names { display:none; }
+  .tb-nav-btn { padding:6px 8px; font-size:11px; gap:4px; }
+}
+
+/* ═══════════════ ATTACHMENT ZONE ═══════════════ */
+.attach-zone{
+  border:2px dashed var(--border-gold);
+  border-radius:var(--radius-md);
+  padding:20px 16px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .18s ease;
+  background:var(--bg-elevated);
+  display:flex;
+  align-items:center;
+  gap:14px;
+  justify-content:center;
+}
+.attach-zone:hover{
+  border-color:var(--gold);
+  background:var(--gold-glow);
+}
+.attach-zone.dragover{
+  border-color:var(--gold);
+  background:var(--gold-glow);
+  transform:scale(1.01);
+}
+.attach-zone-icon{
+  font-size:28px;
+  opacity:.8;
+}
+.attach-zone-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  text-align:start;
+}
+.attach-zone-text strong{
+  color:var(--text-primary);
+  font-size:13px;
+  font-weight:600;
+}
+.attach-zone-text span{
+  color:var(--text-secondary);
+  font-size:11px;
+}
+.attach-zone-text small{
+  color:var(--text-muted);
+  font-size:10px;
+  margin-top:3px;
+}
+.attach-list{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:10px;
+}
+.attach-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:12px;
+}
+.attach-item-icon{
+  font-size:18px;
+  flex-shrink:0;
+}
+.attach-item-name{
+  flex:1;
+  color:var(--text-primary);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+.attach-item-size{
+  color:var(--text-muted);
+  font-size:10px;
+  font-family:var(--font-mono);
+  flex-shrink:0;
+}
+.attach-item-remove{
+  background:transparent;
+  border:none;
+  color:var(--danger);
+  cursor:pointer;
+  padding:4px 8px;
+  border-radius:var(--radius-sm);
+  font-size:16px;
+  transition:all .15s;
+}
+.attach-item-remove:hover{
+  background:rgba(239,68,68,0.15);
+}
+.attach-item-link{
+  color:var(--gold);
+  text-decoration:none;
+  font-weight:500;
+}
+.attach-item-link:hover{
+  text-decoration:underline;
+}
+.attach-progress{
+  flex:1;
+  height:4px;
+  background:var(--bg-input);
+  border-radius:2px;
+  overflow:hidden;
+  margin:0 10px;
+}
+.attach-progress-fill{
+  height:100%;
+  background:var(--gold);
+  transition:width .2s ease;
+}
+
+/* ═══════════════ DEPT / TYPE BADGE ═══════════════ */
+.dept-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 10px;
+  border-radius:999px;
+  background:var(--gold-glow);
+  color:var(--gold);
+  font-size:11px;
+  font-weight:600;
+  border:1px solid var(--border-gold);
+}
+.reqtype-chip{
+  display:inline-flex;
+  align-items:center;
+  padding:3px 10px;
+  border-radius:999px;
+  background:var(--bg-elevated);
+  color:var(--text-secondary);
+  font-size:11px;
+  border:1px solid var(--border);
+}
+
+/* ═══════════════ ADMIN MAP TABLE ═══════════════ */
+.map-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+.map-dept-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:14px 16px;
+}
+.map-dept-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.map-dept-name{
+  font-weight:700;
+  color:var(--gold);
+  font-size:14px;
+}
+.map-types{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:10px;
+}
+.map-type-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:12px;
+  color:var(--text-primary);
+}
+.map-type-chip button{
+  background:none;
+  border:none;
+  color:var(--danger);
+  cursor:pointer;
+  padding:0 2px;
+  font-size:14px;
+  line-height:1;
+}
+.map-add-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.map-add-row input{
+  flex:1;
+}
+
+/* Responsive (small screens) */
+@media(max-width:560px){
+  .attach-zone{ flex-direction:column; gap:6px; padding:16px 10px; }
+  .attach-zone-text{ text-align:center; align-items:center; }
+  .map-add-row{ flex-wrap:wrap; }
+  .map-add-row input{ width:100%; flex:1 1 100%; }
+}
+</style>
+</head>
+<body>
+<!-- ═══════════════════════ LOADING ═══════════════════════ -->
+<div id="loadingScreen">
+  <div class="load-star">
+    <svg width="64" height="64" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(184,151,90,0.15)" stroke-width="1"/>
+      <g fill="none" stroke="#B8975A" stroke-width="2">
+        <line x1="50" y1="8"  x2="50" y2="32"/>
+        <line x1="50" y1="68" x2="50" y2="92"/>
+        <line x1="8"  y1="50" x2="32" y2="50"/>
+        <line x1="68" y1="50" x2="92" y2="50"/>
+        <line x1="20" y1="20" x2="37" y2="37"/>
+        <line x1="63" y1="63" x2="80" y2="80"/>
+        <line x1="80" y1="20" x2="63" y2="37"/>
+        <line x1="37" y1="63" x2="20" y2="80"/>
+        <circle cx="50" cy="50" r="16" fill="rgba(184,151,90,0.08)" stroke="#B8975A" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="6"  fill="#B8975A"/>
+      </g>
+    </svg>
+  </div>
+  <div class="load-bar"><div class="load-bar-fill"></div></div>
+  <div class="load-text">GAS IT Desk</div>
+</div>
+
+<!-- ═══════════════════════ LOGIN ═══════════════════════ -->
+<div id="loginScreen">
+  <div class="login-ambient"></div>
+  <div class="login-grid-bg"></div>
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-star">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(184,151,90,0.25)" stroke-width="1"/>
+          <g fill="none" stroke="#B8975A" stroke-width="2">
+            <line x1="50" y1="10" x2="50" y2="34"/>
+            <line x1="50" y1="66" x2="50" y2="90"/>
+            <line x1="10" y1="50" x2="34" y2="50"/>
+            <line x1="66" y1="50" x2="90" y2="50"/>
+            <line x1="22" y1="22" x2="38" y2="38"/>
+            <line x1="62" y1="62" x2="78" y2="78"/>
+            <line x1="78" y1="22" x2="62" y2="38"/>
+            <line x1="38" y1="62" x2="22" y2="78"/>
+            <circle cx="50" cy="50" r="16" fill="rgba(184,151,90,0.07)" stroke-width="1.5"/>
+            <circle cx="50" cy="50" r="6" fill="#B8975A"/>
+          </g>
+        </svg>
+      </div>
+      <div class="brand-title">GAS IT Desk</div>
+      <div class="brand-sub">German Auto Service · Mercedes-Benz Egypt</div>
+      <div class="brand-line"></div>
+    </div>
+
+    <div class="login-error" id="loginErr"></div>
+
+    <label class="f-label">اسم المستخدم</label>
+    <input type="text"     class="f-input" id="liUser" placeholder="أدخل اسم المستخدم" autocomplete="username">
+    <label class="f-label">كلمة المرور</label>
+    <input type="password" class="f-input" id="liPass" placeholder="••••••••" autocomplete="current-password">
+
+    <button class="btn-signin" id="signInBtn" onclick="doLogin()">تسجيل الدخول</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ APP SHELL ═══════════════════════ -->
+<div id="appShell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-brand">
+      <div class="tb-star">
+        <svg viewBox="0 0 100 100">
+          <g fill="none" stroke="#B8975A" stroke-width="2.5">
+            <line x1="50" y1="5"  x2="50" y2="33"/>
+            <line x1="50" y1="67" x2="50" y2="95"/>
+            <line x1="5"  y1="50" x2="33" y2="50"/>
+            <line x1="67" y1="50" x2="95" y2="50"/>
+            <line x1="18" y1="18" x2="36" y2="36"/>
+            <line x1="64" y1="64" x2="82" y2="82"/>
+            <line x1="82" y1="18" x2="64" y2="36"/>
+            <line x1="36" y1="64" x2="18" y2="82"/>
+            <circle cx="50" cy="50" r="15" fill="rgba(184,151,90,0.1)" stroke-width="1.8"/>
+            <circle cx="50" cy="50" r="5.5" fill="#B8975A"/>
+          </g>
+        </svg>
+      </div>
+      <div class="tb-names">
+        <span class="tb-name">GAS Internal Tickets</span>
+        <span class="tb-sub">German Auto Service</span>
+      </div>
+    </div>
+    <div class="tb-sep"></div>
+    <nav class="tb-nav" id="mainNav"></nav>
+    <div class="tb-right">
+      <!-- Theme Toggle -->
+      <div class="theme-toggle" onclick="toggleTheme()" title="تبديل المظهر">
+        <span class="theme-icon-dark">🌙</span>
+        <span class="theme-icon-light">☀️</span>
+        <div class="theme-thumb"></div>
+      </div>
+      <!-- Notifications -->
+      <div style="position:relative;">
+        <button class="icon-btn" id="notifBtn" onclick="toggleNotifPanel()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="n-badge" id="notifBadge" style="display:none;">0</span>
+        </button>
+        <div class="notif-panel" id="notifPanel">
+          <div class="np-head">
+            <span class="np-title">الإشعارات</span>
+            <div style="display:flex;gap:8px;">
+              <button class="np-readall" onclick="markAllNotifRead()">قراءة الكل</button>
+              <button class="np-readall" style="color:var(--danger);" onclick="deleteAllNotifs()">مسح الكل</button>
+            </div>
+          </div>
+          <div class="np-list" id="notifList"></div>
+        </div>
+      </div>
+      <!-- User -->
+      <div class="user-chip" onclick="showPage('profile')">
+        <div class="u-avatar" id="tbAvatar"></div>
+        <div class="u-info">
+          <span class="u-name" id="tbName">—</span>
+          <span class="u-role" id="tbRole">—</span>
+        </div>
+      </div>
+      <!-- Logout -->
+      <button class="icon-btn" onclick="doLogout()" title="تسجيل الخروج" style="color:#F87171;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="app-body">
+    <main class="content" id="contentEl">
+
+      <!-- DASHBOARD -->
+      <div class="page" id="page-dashboard">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">نظرة عامة</span>
+            <h1 class="ph-title">لوحة التحكم</h1>
+            <p class="ph-sub" id="dashSub"></p>
+          </div>
+          <div class="ph-right" id="dashActions"></div>
+        </div>
+        <div class="stats-row" id="dashStats"></div>
+        <div class="charts-grid" id="dashCharts"></div>
+      </div>
+
+      <!-- MY TICKETS -->
+      <div class="page" id="page-mytickets">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">طلباتي</span>
+            <h1 class="ph-title">طلباتي الداخلية</h1>
+            <p class="ph-sub">جميع الطلبات المقدمة للإدارات الأخرى</p>
+          </div>
+          <div class="ph-right">
+            <button class="btn btn-gold" onclick="openNewTicketModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              طلب جديد
+            </button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <span class="tbl-head-title">قائمة الطلبات</span>
+            <div class="tbl-filters">
+              <input class="s-input" placeholder="بحث..." oninput="filterMyTickets(this.value)">
+              <select class="s-select" onchange="filterMyByStatus(this.value)">
+                <option value="">كل الحالات</option>
+                <option value="open">مفتوح</option>
+                <option value="in_progress">قيد التنفيذ</option>
+                
+                <option value="closed">مغلق</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-tbl"><thead><tr>
+              <th>الرقم</th><th>العنوان</th><th>الإدارة المسؤولة</th><th>نوع الطلب</th><th>الأولوية</th><th>الحالة</th><th>المعين</th><th>التاريخ</th><th></th>
+            </tr></thead><tbody id="myTbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALL TICKETS -->
+      <div class="page" id="page-alltickets">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">إدارة الطلبات</span>
+            <h1 class="ph-title">جميع الطلبات الداخلية</h1>
+            <p class="ph-sub">إدارة وتتبع الطلبات بين الإدارات</p>
+          </div>
+          <div class="ph-right">
+            <button class="btn btn-ghost" onclick="exportCSV()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              تصدير CSV
+            </button>
+          </div>
+        </div>
+        <div id="allTicketsBanner"></div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <span class="tbl-head-title">قائمة الطلبات</span>
+            <div class="tbl-filters">
+              <input class="s-input" placeholder="بحث..." oninput="filterAllTickets(this.value)">
+              <select class="s-select" id="at_dept" onchange="filterAll('department',this.value)">
+                <option value="">كل الإدارات</option>
+              </select>
+              <select class="s-select" onchange="filterAll('status',this.value)">
+                <option value="">كل الحالات</option>
+                <option value="open">مفتوح</option>
+                <option value="assigned">معين</option>
+                <option value="in_progress">قيد التنفيذ</option>
+                
+                <option value="closed">مغلق</option>
+              </select>
+              <select class="s-select" onchange="filterAll('priority',this.value)">
+                <option value="">كل الأولويات</option>
+                <option value="critical">حرجة</option>
+                <option value="high">عالية</option>
+                <option value="medium">متوسطة</option>
+                <option value="low">منخفضة</option>
+              </select>
+              <select class="s-select" onchange="filterAll('date',this.value)">
+                <option value="">كل الأوقات</option>
+                <option value="today">اليوم</option>
+                <option value="week">آخر 7 أيام</option>
+                <option value="month">آخر 30 يوم</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-tbl"><thead><tr>
+              <th>الرقم</th><th>العنوان</th><th>مقدم الطلب</th><th>الإدارة المستهدفة</th><th>نوع الطلب</th><th>الأولوية</th><th>الحالة</th><th>المعين</th><th>SLA</th><th>إجراء</th>
+            </tr></thead><tbody id="allTbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTBOUND TICKETS — طلبات فريقي الصادرة لإدارات أخرى -->
+      <div class="page" id="page-outbound">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">📤 متابعة الفريق</span>
+            <h1 class="ph-title">طلبات فريقي الصادرة</h1>
+            <p class="ph-sub">الطلبات التي بعثها موظفو إدارتك إلى إدارات أخرى — للعرض والمتابعة</p>
+          </div>
+        </div>
+        <div id="outboundStats"></div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <span class="tbl-head-title">الطلبات الصادرة</span>
+            <div class="tbl-filters">
+              <input class="s-input" placeholder="بحث..." oninput="filterOutboundSearch(this.value)">
+              <select class="s-select" id="ob_dept" onchange="filterOutbound('dept',this.value)">
+                <option value="">كل الإدارات المستلمة</option>
+              </select>
+              <select class="s-select" onchange="filterOutbound('status',this.value)">
+                <option value="">كل الحالات</option>
+                <option value="open">مفتوح</option>
+                <option value="assigned">معين</option>
+                <option value="in_progress">قيد التنفيذ</option>
+                
+                <option value="closed">مغلق</option>
+              </select>
+              <select class="s-select" onchange="filterOutbound('priority',this.value)">
+                <option value="">كل الأولويات</option>
+                <option value="critical">حرجة</option>
+                <option value="high">عالية</option>
+                <option value="medium">متوسطة</option>
+                <option value="low">منخفضة</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-tbl"><thead><tr>
+              <th>الرقم</th><th>العنوان</th><th>مقدم الطلب</th><th>الإدارة المستهدفة</th><th>نوع الطلب</th><th>الأولوية</th><th>الحالة</th><th>المعين</th><th>التاريخ</th>
+            </tr></thead><tbody id="outboundTbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TICKET DETAIL -->
+      <div class="page" id="page-detail">
+        <div class="ph">
+          <div class="ph-left" style="flex-direction:row;align-items:center;gap:12px;">
+            <button class="btn btn-ghost" style="padding:7px 12px;" onclick="goBack()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              رجوع
+            </button>
+            <div>
+              <div class="ph-tag" id="detailNum"></div>
+              <div class="ph-title" id="detailTitle" style="font-size:19px;"></div>
+            </div>
+          </div>
+          <div class="ph-right" id="detailBtns"></div>
+        </div>
+        <div class="detail-grid" id="detailGrid"></div>
+      </div>
+
+      <!-- USERS -->
+      <div class="page" id="page-users">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">إدارة الفريق</span>
+            <h1 class="ph-title">المستخدمون</h1>
+            <p class="ph-sub">إدارة حسابات الموظفين وفريق IT</p>
+          </div>
+          <div class="ph-right">
+            <input class="s-input" id="usersSearch" placeholder="بحث بالاسم أو القسم..." oninput="filterUsers(this.value)" style="width:220px;">
+            <select class="s-select" onchange="filterUsersByRole(this.value)">
+              <option value="">كل الأدوار</option>
+              <option value="employee">موظف</option>
+              <option value="admin">IT Admin</option>
+              <option value="manager">مدير</option>
+            </select>
+            <button class="btn btn-gold" onclick="openNewUserModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              مستخدم جديد
+            </button>
+          </div>
+        </div>
+        <div class="users-grid" id="usersGrid"></div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="page" id="page-reports">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">تقارير وإحصاءات</span>
+            <h1 class="ph-title">لوحة التقارير</h1>
+            <p class="ph-sub">تحليل أداء فريق الدعم الفني</p>
+          </div>
+          <div class="ph-right">
+            <button class="btn btn-ghost" id="resetStatsBtn" onclick="confirmResetStats()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.56"/></svg>
+              إعادة ضبط
+            </button>
+            <button class="btn btn-ghost" onclick="exportCSV()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              تصدير
+            </button>
+          </div>
+        </div>
+        <div id="reportsContent"></div>
+      </div>
+
+      <!-- ARCHIVE -->
+      <div class="page" id="page-archive">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">الأرشيف</span>
+            <h1 class="ph-title">التيكتات المؤرشفة</h1>
+            <p class="ph-sub">التيكتات المؤرشفة — يمكن استرجاعها أو حذفها نهائياً</p>
+          </div>
+        </div>
+        <div id="archiveContent"></div>
+      </div>
+
+      <!-- DEPARTMENT MAP (Super Admin) -->
+      <div class="page" id="page-deptmap">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">إدارة النظام</span>
+            <h1 class="ph-title">الإدارات وأنواع الطلبات</h1>
+            <p class="ph-sub">أضف أو احذف إدارات وأنواع طلبات — تنعكس فوراً على نموذج إنشاء التيكت</p>
+          </div>
+        </div>
+        <div id="deptmapContent"></div>
+      </div>
+
+      <!-- ROLES ASSIGNMENT (Super Admin only) -->
+      <div class="page" id="page-roles">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">إدارة النظام</span>
+            <h1 class="ph-title">الأدوار والإدارات</h1>
+            <p class="ph-sub">تحديد دور وإدارة كل موظف — مدير، مشرف، موظف</p>
+          </div>
+        </div>
+        <div id="rolesContent"></div>
+      </div>
+
+      <!-- AUDIT LOG -->
+      <div class="page" id="page-auditlog">
+        <div id="auditlogContent"></div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="page" id="page-profile">
+        <div class="ph">
+          <div class="ph-left">
+            <span class="ph-tag">الحساب الشخصي</span>
+            <h1 class="ph-title">ملفي الشخصي</h1>
+          </div>
+        </div>
+        <div id="profileContent"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════ MODALS ═══════════════════════ -->
+
+<!-- New Ticket -->
+<div class="modal-mask" id="newTicketModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <span class="modal-title">طلب داخلي جديد</span>
+      <button class="modal-x" onclick="closeModal('newTicketModal')">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="fg-2">
+        <div class="full fg"><label class="fl">عنوان الطلب *</label><input class="fi" id="nt_title" placeholder="وصف مختصر للطلب"></div>
+
+        <div class="fg"><label class="fl">الإدارة المسؤولة *</label>
+          <select class="fsel" id="nt_dept" onchange="onDeptChange()">
+            <option value="">اختر الإدارة</option>
+          </select>
+        </div>
+
+        <div class="fg"><label class="fl">نوع الطلب *</label>
+          <select class="fsel" id="nt_reqtype" disabled>
+            <option value="">اختر الإدارة أولاً</option>
+          </select>
+        </div>
+
+        <div class="fg"><label class="fl">الأولوية *</label>
+          <select class="fsel" id="nt_priority">
+            <option value="low">منخفضة</option>
+            <option value="medium" selected>متوسطة</option>
+            <option value="high">عالية</option>
+            <option value="critical">حرجة</option>
+          </select>
+        </div>
+
+        <div class="full fg"><label class="fl">وصف تفصيلي *</label><textarea class="fta" id="nt_desc" placeholder="اشرح الطلب بالتفصيل..."></textarea></div>
+
+        <div class="full fg">
+          <label class="fl">مرفقات (صور، PDF، ملفات) — اختياري</label>
+          <div class="attach-zone" id="nt_attach_zone" onclick="document.getElementById('nt_attach_input').click()">
+            <input type="file" id="nt_attach_input" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar" style="display:none" onchange="handleAttachSelect(event)">
+            <div class="attach-zone-icon">📎</div>
+            <div class="attach-zone-text">
+              <strong>اضغط لاختيار الملفات</strong>
+              <span>أو اسحبها وأفلتها هنا</span>
+              <small>الحد الأقصى: 10 ميجا لكل ملف</small>
+            </div>
+          </div>
+          <div id="nt_attach_list" class="attach-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-gold" id="nt_submit_btn" onclick="submitTicket()">إرسال الطلب</button>
+      <button class="btn btn-ghost" onclick="closeModal('newTicketModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- Update Ticket (IT/Manager) -->
+<div class="modal-mask" id="updateTicketModal">
+  <div class="modal-box sm">
+    <div class="modal-hd">
+      <span class="modal-title">تحديث التيكت</span>
+      <button class="modal-x" onclick="closeModal('updateTicketModal')">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="fg"><label class="fl">الحالة</label>
+        <select class="fsel" id="upd_status">
+          <option value="assigned">معين</option>
+          <option value="in_progress">قيد التنفيذ</option>
+          
+          <option value="closed">مغلق</option>
+        </select>
+      </div>
+      <div class="fg" id="upd_assign_wrap"><label class="fl">تعيين إلى</label>
+        <select class="fsel" id="upd_assigned_to">
+          <option value="">— بدون تعيين —</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">ملاحظة</label>
+        <textarea class="fta" id="upd_note" placeholder="أضف تحديثاً أو ملاحظة..."></textarea>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-gold" onclick="saveTicketUpdate()">حفظ التحديث</button>
+      <button class="btn btn-ghost" onclick="closeModal('updateTicketModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- New / Edit User -->
+<div class="modal-mask" id="newUserModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <span class="modal-title" id="userModalTitle">مستخدم جديد</span>
+      <button class="modal-x" onclick="closeModal('newUserModal')">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="fg-2">
+        <div class="fg"><label class="fl">الاسم الكامل *</label><input class="fi" id="nu_name" placeholder="الاسم الكامل"></div>
+        <div class="fg"><label class="fl">اسم المستخدم *</label><input class="fi" id="nu_uname" placeholder="username"></div>
+        <div class="fg"><label class="fl">البريد الإلكتروني</label><input class="fi" id="nu_email" placeholder="email@gas.com.eg" type="email"></div>
+        <div class="fg"><label class="fl">كلمة المرور <span id="passRequired">*</span></label><input class="fi" id="nu_pass" placeholder="••••••••" type="password"></div>
+        <div class="fg"><label class="fl">الدور *</label>
+          <select class="fsel" id="nu_role">
+            <option value="employee">موظف</option>
+            <option value="supervisor">مشرف إدارة</option>
+            <option value="manager">مدير إدارة</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">الإدارة *</label>
+          <select class="fsel" id="nu_dept">
+            <option value="">— اختر الإدارة —</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">رقم الهاتف</label><input class="fi" id="nu_phone" placeholder="01xxxxxxxxx"></div>
+        <div class="fg" id="statusField" style="display:none;">
+          <label class="fl">الحالة</label>
+          <select class="fsel" id="nu_active">
+            <option value="true">نشط</option>
+            <option value="false">غير نشط</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-gold" onclick="saveUser()">حفظ</button>
+      <button class="btn btn-ghost" onclick="closeModal('newUserModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+
+<!-- Confirm Dialog — outside appShell to avoid overflow:hidden clipping -->
+<div class="confirm-mask" id="confirmMask">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon">⚠️</div>
+    <div class="confirm-title" id="confirmTitle"></div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-btns">
+      <button class="btn btn-danger" id="confirmOkBtn" onclick="confirmOk()">تأكيد</button>
+      <button class="btn btn-ghost" onclick="closeConfirm()">إلغاء</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
