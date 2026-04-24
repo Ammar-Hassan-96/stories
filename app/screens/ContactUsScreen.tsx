@@ -23,28 +23,38 @@ const ContactUsScreen = () => {
           </Text>
           <View style={{ width: 44 }} />
         </View>
-        <ScrollView className="flex-1 px-6 py-8">
-          <Text style={{ writingDirection: "rtl" }} className={`text-lg font-semibold text-right mb-8 ${isDark ? "text-gray-100" : "text-gray-800"}`}>
+        <ScrollView className="flex-1 px-3 mx-4 py-8">
+          <Text style={{ writingDirection: "rtl" }} className={`text-lg font-semibold text-left mb-8 ${isDark ? "text-gray-100" : "text-gray-800"}`}>
             يسعدنا تواصلكم معنا لأي استفسارات أو اقتراحات.
           </Text>
-          
-          <View className="mb-6 flex-row-reverse items-center">
-            <View className={`p-4 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} ml-4`}>
-              <Mail color={isDark ? "#ffffff" : "#000000"} size={24} />
-            </View>
-            <View className="flex-1">
-              <Text style={{ writingDirection: "rtl" }} className={`text-right text-base mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>البريد الإلكتروني</Text>
-              <Text style={{ writingDirection: "rtl" }} className={`text-right text-lg font-medium ${isDark ? "text-white" : "text-gray-900"}`}>support@stories-app.com</Text>
-            </View>
-          </View>
-          
-          <View className="mb-6 flex-row-reverse items-center">
+
+          <View className="mb-6 flex-row items-center">
             <View className={`p-4 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} ml-4`}>
               <Phone color={isDark ? "#ffffff" : "#000000"} size={24} />
             </View>
             <View className="flex-1">
-              <Text style={{ writingDirection: "rtl" }} className={`text-right text-base mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>رقم الهاتف</Text>
-              <Text style={{ writingDirection: "rtl" }} className={`text-right text-lg font-medium ${isDark ? "text-white" : "text-gray-900"}`}>+966 50 000 0000</Text>
+              <Text style={{ writingDirection: "rtl" }} className={`text-left text-base mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>رقم الهاتف</Text>
+              <Text style={{ writingDirection: "rtl" }} className={`text-left text-lg font-medium ${isDark ? "text-white" : "text-gray-900"}`}>+201554968880</Text>
+            </View>
+          </View>
+
+          <View className="mb-6 flex-row items-center">
+            <View className={`p-4 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} ml-4`}>
+              <Phone color={isDark ? "#ffffff" : "#000000"} size={24} />
+            </View>
+            <View className="flex-1">
+              <Text style={{ writingDirection: "rtl" }} className={`text-left text-base mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>رقم الهاتف</Text>
+              <Text style={{ writingDirection: "rtl" }} className={`text-left text-lg font-medium ${isDark ? "text-white" : "text-gray-900"}`}>+01023668236</Text>
+            </View>
+          </View>
+
+          <View className="mb-6 flex-row items-center">
+            <View className={`p-4 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} ml-4`}>
+              <Phone color={isDark ? "#ffffff" : "#000000"} size={24} />
+            </View>
+            <View className="flex-1">
+              <Text style={{ writingDirection: "rtl" }} className={`text-left text-base mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>رقم الهاتف</Text>
+              <Text style={{ writingDirection: "rtl" }} className={`text-left text-lg font-medium ${isDark ? "text-white" : "text-gray-900"}`}>+201112310567</Text>
             </View>
           </View>
           

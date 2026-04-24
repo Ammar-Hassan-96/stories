@@ -24,15 +24,46 @@ const PrivacyPolicyScreen = () => {
           <View style={{ width: 44 }} />
         </View>
         <ScrollView className="flex-1 p-6">
-          <Text style={{ writingDirection: "rtl" }} className={`text-base leading-8 text-right mb-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-            هذه الصفحة تحتوي على سياسة الخصوصية الخاصة بتطبيق مكتبة القصص. 
-            تطبيقنا يحترم خصوصيتك ولا يقوم بجمع أي بيانات شخصية أو تخزينها على خوادم خارجية. 
-            جميع القصص يتم عرضها محلياً على جهازك.
+          <Text style={{ writingDirection: "rtl" }} className={`text-base leading-8 text-left mb-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            نحن نحترم خصوصيتك ونلتزم بحماية بياناتك.
           </Text>
-          <Text style={{ writingDirection: "rtl" }} className={`text-base leading-8 text-right mb-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-            نحن نستخدم بعض التقنيات الأساسية لضمان عمل التطبيق بشكل سليم وتوفير تجربة مستخدم ممتازة.
+
+          <Text style={{ writingDirection: "rtl" }} className={`text-lg font-bold text-left mt-2 mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+            جمع المعلومات
+          </Text>
+          <Text style={{ writingDirection: "rtl" }} className={`text-base leading-8 text-left mb-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            لا نقوم بجمع بيانات شخصية حساسة. قد يتم جمع بيانات غير شخصية لتحسين الأداء.
+          </Text>
+
+          <Text style={{ writingDirection: "rtl" }} className={`text-lg font-bold text-left mt-2 mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+            استخدام المعلومات
+          </Text>
+          <Text style={{ writingDirection: "rtl" }} className={`text-base leading-8 text-left mb-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            تُستخدم البيانات فقط لتحسين تجربة المستخدم.
+          </Text>
+
+          <Text style={{ writingDirection: "rtl" }} className={`text-lg font-bold text-left mt-2 mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+            مشاركة المعلومات
+          </Text>
+          <Text style={{ writingDirection: "rtl" }} className={`text-base leading-8 text-left mb-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            لا نقوم ببيع أو مشاركة بيانات المستخدمين.
+          </Text>
+
+          <Text style={{ writingDirection: "rtl" }} className={`text-lg font-bold text-left mt-2 mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+            الأمان
+          </Text>
+          <Text style={{ writingDirection: "rtl" }} className={`text-base leading-8 text-left mb-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            نستخدم وسائل مناسبة لحماية بيانات المستخدمين.
+          </Text>
+
+          <Text style={{ writingDirection: "rtl" }} className={`text-lg font-bold text-left mt-2 mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+            التواصل
+          </Text>
+          <Text style={{ writingDirection: "rtl" }} className={`text-base leading-8 text-left mb-12 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+            7kawy.net@gmail.com
           </Text>
         </ScrollView>
+        
       </SafeAreaView>
     </View>
   );

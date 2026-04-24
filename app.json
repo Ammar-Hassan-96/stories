@@ -1,28 +1,29 @@
 {
   "expo": {
-    "name": "stories",
+   "name": "عالم القصص",
     "slug": "stories",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#130C2C"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.stories.app"
+      "bundleIdentifier": "com.storiesworld.arabic",
+      "userInterfaceStyle": "automatic"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#130C2C"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.stories.app"
+      "package": "com.storiesworld.arabic"
     },
     "web": {
       "favicon": "./assets/favicon.png"

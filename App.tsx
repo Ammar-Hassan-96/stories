@@ -1,9 +1,10 @@
 import "react-native-gesture-handler";
 import "./global.css";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import React from "react";
-import { View, ActivityIndicator, I18nManager } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { View, I18nManager } from "react-native";
 import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 import { Amiri_400Regular, Amiri_700Bold } from "@expo-google-fonts/amiri";
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -25,6 +26,9 @@ import { RootDrawerParamList } from "./app/types/navigation";
 
 I18nManager.allowRTL(true);
 I18nManager.forceRTL(true);
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
@@ -78,25 +82,41 @@ const Navigation = () => {
 };
 
 export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
   const [fontsLoaded] = useFonts({
     Amiri_400Regular,
     Amiri_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#F5EFE6" }}>
-            <ActivityIndicator size="large" color="#8B5A2B" />
-          </View>
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    );
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Simulate a minimum 2-second loading time for the splash screen
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    if (fontsLoaded) {
+      prepare();
+    }
+  }, [fontsLoaded]);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null;
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
         <ThemeProvider>
           <Navigation />

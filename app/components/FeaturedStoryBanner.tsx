@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     writingDirection: "rtl",
   },
   featuredPill: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
     gap: 4,
     backgroundColor: "rgba(255,255,255,0.16)",
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   bottomContent: {
     padding: 18,
     paddingTop: 8,
-    alignItems: "flex-end",
+    alignItems: "flex-start",
   },
   title: {
     fontFamily: "Amiri_700Bold",
